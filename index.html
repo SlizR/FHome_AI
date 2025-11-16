@@ -3,228 +3,779 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FHome AI - Smart Assistant</title>
+    <title>FHome AI - Education AI</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #1a1a2e;
-            display: flex;
-            justify-content: center;
-            align-items: stretch;
-            min-height: 100vh;
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
-        .chat-container {
-            width: 100%;
-            max-width: 100%;
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a4d2e 0%, #1a7a4a 50%, #0f5c38 100%);
             height: 100vh;
-            background-color: #2a2a4a;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            color: #fff;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            position: relative;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            transition: transform 0.3s ease;
         }
-        .chat-header {
-            background-color: #5d3f6a;
-            color: white;
+
+        .sidebar.hidden {
+            transform: translateX(-100%);
+        }
+
+        .logo-section {
             padding: 20px;
             text-align: center;
-            font-size: 1.8em;
-            font-weight: 700;
-            border-bottom: 3px solid #7c4dff;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .chat-messages {
-            flex-grow: 1;
-            padding: 30px;
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid #2ecc71;
+            box-shadow: 0 0 20px rgba(46, 204, 113, 0.5);
+            object-fit: cover;
+            background: #1a1a1a;
+        }
+
+        .logo-text {
+            margin-top: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .chat-list {
+            flex: 1;
             overflow-y: auto;
+            padding: 10px;
+        }
+
+        .chat-item {
+            padding: 12px 15px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-item:hover {
+            background: rgba(46, 204, 113, 0.2);
+            transform: translateX(5px);
+        }
+
+        .chat-item.active {
+            background: rgba(46, 204, 113, 0.3);
+            border-left: 3px solid #2ecc71;
+        }
+
+        .delete-btn {
+            background: rgba(231, 76, 60, 0.6);
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .delete-btn:hover {
+            background: rgba(231, 76, 60, 0.8);
+        }
+
+        .new-chat-btn {
+            margin: 10px;
+            padding: 15px;
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .new-chat-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.5);
+        }
+
+        .settings-btn {
+            margin: 10px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .settings-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .main-content {
+            flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            background-color: #2a2a4a;
+            background: rgba(0, 0, 0, 0.1);
         }
-        .message {
-            max-width: 75%;
-            padding: 15px 20px;
-            border-radius: 25px;
-            line-height: 1.6;
-            font-size: 1.1em;
-            color: #e0e0e0;
-            animation: fadeIn 0.3s ease-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .user-message {
-            align-self: flex-end;
-            background-color: #7c4dff;
-            border-bottom-right-radius: 5px;
-            color: white;
-        }
-        .ai-message {
-            align-self: flex-start;
-            background-color: #4a4a6e;
-            border-bottom-left-radius: 5px;
-        }
-        .chat-input-area {
+
+        .header {
+            padding: 20px 30px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
-            padding: 20px;
-            border-top: 1px solid #3c3c5c;
-            background-color: #353555;
+            justify-content: space-between;
+            align-items: center;
         }
-        #userInput {
-            flex-grow: 1;
-            padding: 15px;
+
+        .toggle-sidebar {
+            background: rgba(255, 255, 255, 0.1);
             border: none;
-            border-radius: 30px;
-            font-size: 1.1em;
-            background-color: #4a4a6e;
             color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s;
         }
-        #sendBtn {
-            background-color: #7c4dff;
+
+        .toggle-sidebar:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .message {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #2ecc71;
+            background: #1a1a1a;
+            flex-shrink: 0;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 15px 20px;
+            border-radius: var(--msg-radius, 20px);
+            word-wrap: break-word;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
             color: white;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .message.ai .message-content {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .input-container {
+            padding: 20px 30px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 15px;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            color: white;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .message-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .message-input:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #2ecc71;
+            box-shadow: 0 0 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .send-btn {
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
             border: none;
-            border-radius: 30px;
-            padding: 10px 25px;
-            margin-left: 15px;
+            border-radius: 25px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .send-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.5);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #0a4d2e, #1a7a4a);
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #2ecc71;
+        }
+
+        .setting-group {
+            margin: 20px 0;
+        }
+
+        .setting-label {
+            display: block;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .setting-input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .setting-input:focus {
+            border-color: #2ecc71;
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.3);
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .slider {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #2ecc71;
             cursor: pointer;
         }
-        .typing-indicator {
-            align-self: flex-start;
-            padding: 10px 20px;
-            font-style: italic;
-            color: #b0b0d0;
-            opacity: 0;
-            transition: opacity 0.3s;
+
+        .slider-value {
+            min-width: 40px;
+            text-align: center;
+            color: #2ecc71;
+            font-weight: bold;
         }
-        .typing-indicator.visible {
-            opacity: 1;
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-btn.save {
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            color: white;
+        }
+
+        .modal-btn.cancel {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .empty-state h2 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #2ecc71;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(46, 204, 113, 0.5);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(46, 204, 113, 0.7);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #2ecc71;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: absolute;
+                z-index: 100;
+                height: 100%;
+            }
+            
+            .message-content {
+                max-width: 85%;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="container">
+        <div class="sidebar" id="sidebar">
+            <div class="logo-section">
+                <img src="icon.png" alt="FHome AI" class="logo" id="aiLogo">
+                <div class="logo-text">FHome AI</div>
+            </div>
+            
+            <button class="new-chat-btn" onclick="createNewChat()">
+                New chat
+            </button>
+            
+            <div class="chat-list" id="chatList"></div>
+            
+            <button class="settings-btn" onclick="openSettings()">
+                Settings
+            </button>
+        </div>
 
-    <div class="chat-container">
-        <div class="chat-header">FHome AI</div>
-        <div class="chat-messages" id="chatMessages"></div>
-        <div class="typing-indicator" id="typingIndicator">FHome AI is thinking...</div>
-        <div class="chat-input-area">
-            <input type="text" id="userInput" placeholder="Ask FHome AI anything..." autofocus>
-            <button id="sendBtn" disabled>Send</button>
+        <div class="main-content">
+            <div class="header">
+                <button class="toggle-sidebar" onclick="toggleSidebar()">☰</button>
+                <h2 id="chatTitle">FHome AI</h2>
+            </div>
+
+            <div class="chat-container" id="chatContainer">
+                <div class="empty-state">
+                    <h2>👋 Hello!</h2>
+                    <p>I'm FHome AI, created by Sliz®. Ask me anything!</p>
+                </div>
+            </div>
+
+            <div class="input-container">
+                <input 
+                    type="text" 
+                    class="message-input" 
+                    id="messageInput" 
+                    placeholder="Enter your message to FHome AI..."
+                    onkeypress="handleKeyPress(event)"
+                >
+                <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+                    Send
+                </button>
+            </div>
         </div>
     </div>
 
-    <script type="module">
-import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <h2 class="modal-header">Settings</h2>
+            
+            <div class="setting-group">
+                <label class="setting-label">Your name:</label>
+                <input type="text" class="setting-input" id="userNameInput" placeholder="User">
+            </div>
 
-const API_KEY = "AIzaSyCX1OUsAj44jYd0BXBQYqatIBJcGpVSyh0";
+            <div class="setting-group">
+                <label class="setting-label">URL of your icon:</label>
+                <input type="text" class="setting-input" id="userIconInput" placeholder="https://...">
+            </div>
 
-const chatMessages = document.getElementById("chatMessages");
-const userInput = document.getElementById("userInput");
-const sendBtn = document.getElementById("sendBtn");
-const typingIndicator = document.getElementById("typingIndicator");
+            <div class="setting-group">
+                <label class="setting-label">Rounding messages:</label>
+                <div class="slider-container">
+                    <input type="range" class="slider" id="radiusSlider" min="0" max="30" value="20" oninput="updateRadius(this.value)">
+                    <span class="slider-value" id="radiusValue">20px</span>
+                </div>
+            </div>
 
-let genAI = null;
-let chat = null;
-let chatHistory = [];
+            <div class="modal-buttons">
+                <button class="modal-btn save" onclick="saveSettings()">Save</button>
+                <button class="modal-btn cancel" onclick="closeSettings()">Cancel</button>
+            </div>
+        </div>
+    </div>
 
-const SPECIAL_RESPONSES = {
-    "who are you": "My name is **FHome AI**, your personal education assistant!",
-    "what is your name": "I'm **FHome AI**, always here to help!",
-    "creator": "My creator is **Sliz®**.",
-    "who created you": "I was created by **Sliz®**."
-};
+    <script>
+        const API_KEY = 'AIzaSyCX1OUsAj44jYd0BXBQYqatIBJcGpVSyh0';
+        const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
 
-function displayMessage(text, sender) {
-    const div = document.createElement("div");
-    div.className = `message ${sender === "user" ? "user-message" : "ai-message"}`;
-    div.innerHTML = text.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
-    chatMessages.appendChild(div);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-}
+        let chats = [];
+        let currentChatId = null;
+        let settings = {
+            userName: 'User',
+            userIcon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Ccircle cx="50" cy="50" r="50" fill="%232ecc71"/%3E%3Ctext x="50" y="65" font-size="50" text-anchor="middle" fill="white"%3E👤%3C/text%3E%3C/svg%3E',
+            messageRadius: 20
+        };
 
-function showTyping() { typingIndicator.classList.add("visible"); }
-function hideTyping() { typingIndicator.classList.remove("visible"); }
-function enableInput(flag) { userInput.disabled = !flag; sendBtn.disabled = !flag; }
+        function loadData() {
+            const savedChats = getCookie('fhome_chats');
+            const savedSettings = getCookie('fhome_settings');
+            const savedCurrentChat = getCookie('fhome_current_chat');
 
-async function handleSend() {
-    const text = userInput.value.trim();
-    if (!text) return;
+            if (savedChats) chats = JSON.parse(savedChats);
+            if (savedSettings) settings = JSON.parse(savedSettings);
+            if (savedCurrentChat) currentChatId = savedCurrentChat;
 
-    displayMessage(text, "user");
-    userInput.value = "";
-
-    const lower = text.toLowerCase();
-    for (const key in SPECIAL_RESPONSES) {
-        if (lower.includes(key)) {
-            const reply = SPECIAL_RESPONSES[key];
-            displayMessage(reply, "ai");
-
-            chatHistory.push({
-                role: "assistant",
-                content: [{ type: "text", text: reply }]
-            });
-
-            return;
+            applySettings();
+            renderChatList();
+            
+            if (currentChatId && chats.find(c => c.id === currentChatId)) {
+                loadChat(currentChatId);
+            }
         }
-    }
 
-    chatHistory.push({
-        role: "user",
-        content: [{ type: "text", text }]
-    });
+        function saveData() {
+            setCookie('fhome_chats', JSON.stringify(chats), 365);
+            setCookie('fhome_settings', JSON.stringify(settings), 365);
+            if (currentChatId) setCookie('fhome_current_chat', currentChatId, 365);
+        }
 
-    enableInput(false);
-    showTyping();
+        function setCookie(name, value, days) {
+            const d = new Date();
+            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+            document.cookie = `${name}=${value};expires=${d.toUTCString()};path=/`;
+        }
 
-    try {
-        const result = await chat.sendMessage({
-            content: [{ type: "text", text }]
-        });
+        function getCookie(name) {
+            const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+            return match ? match[2] : null;
+        }
 
-        const reply = result.response.content[0].text;
+        function createNewChat() {
+            const chat = {
+                id: Date.now().toString(),
+                title: 'New chat',
+                messages: [],
+                created: new Date().toISOString()
+            };
+            chats.unshift(chat);
+            currentChatId = chat.id;
+            saveData();
+            renderChatList();
+            loadChat(chat.id);
+        }
 
-        displayMessage(reply, "ai");
+        function loadChat(chatId) {
+            currentChatId = chatId;
+            const chat = chats.find(c => c.id === chatId);
+            if (!chat) return;
 
-        chatHistory.push({
-            role: "assistant",
-            content: [{ type: "text", text: reply }]
-        });
+            const container = document.getElementById('chatContainer');
+            container.innerHTML = '';
 
-    } catch (err) {
-        console.error(err);
-        displayMessage("Error: Gemini API request failed.", "ai");
-    }
+            if (chat.messages.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h2>👋 Hello!</h2>
+                        <p>I'm FHome AI, created by Sliz®. Ask me any question!</p>
+                    </div>
+                `;
+            } else {
+                chat.messages.forEach(msg => {
+                    addMessageToUI(msg.role, msg.text);
+                });
+            }
 
-    hideTyping();
-    enableInput(true);
-}
+            renderChatList();
+            saveData();
+        }
 
-async function initChat() {
-    genAI = new GoogleGenerativeAI(API_KEY);
+        function deleteChat(chatId, event) {
+            event.stopPropagation();
+            if (!confirm('Delete this chat?')) return;
 
-    const model = genAI.getGenerativeModel({
-        model: "gemini-2.5-flash",
-        systemInstruction:
-            "You are FHome AI, a education assistant."
-    });
+            chats = chats.filter(c => c.id !== chatId);
+            if (currentChatId === chatId) {
+                currentChatId = chats.length > 0 ? chats[0].id : null;
+                if (currentChatId) {
+                    loadChat(currentChatId);
+                } else {
+                    document.getElementById('chatContainer').innerHTML = `
+                        <div class="empty-state">
+                            <h2>👋 Hello!</h2>
+                            <p>I'm FHome AI, created by Sliz®. Ask me any question!</p>
+                        </div>
+                    `;
+                }
+            }
+            saveData();
+            renderChatList();
+        }
 
-    chat = model.startChat({
-        history: chatHistory
-    });
+        function renderChatList() {
+            const list = document.getElementById('chatList');
+            list.innerHTML = chats.map(chat => `
+                <div class="chat-item ${chat.id === currentChatId ? 'active' : ''}" onclick="loadChat('${chat.id}')">
+                    <span>${chat.title}</span>
+                    <button class="delete-btn" onclick="deleteChat('${chat.id}', event)">🗑️</button>
+                </div>
+            `).join('');
+        }
 
-    displayMessage("Hello! I'm FHome AI. Ask me anything.", "ai");
-    sendBtn.disabled = false;
-}
+        function addMessageToUI(role, text) {
+            const container = document.getElementById('chatContainer');
+            const emptyState = container.querySelector('.empty-state');
+            if (emptyState) emptyState.remove();
 
-sendBtn.addEventListener("click", handleSend);
-userInput.addEventListener("keypress", e => {
-    if (e.key === "Enter" && !sendBtn.disabled) handleSend();
-});
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${role}`;
+            
+            const avatar = document.createElement('img');
+            avatar.className = 'message-avatar';
+            avatar.src = role === 'user' ? settings.userIcon : 'icon.png';
+            
+            const content = document.createElement('div');
+            content.className = 'message-content';
+            content.textContent = text;
+            
+            msgDiv.appendChild(avatar);
+            msgDiv.appendChild(content);
+            container.appendChild(msgDiv);
+            container.scrollTop = container.scrollHeight;
+        }
 
-initChat();
-</script>
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            if (!currentChatId) createNewChat();
+
+            const chat = chats.find(c => c.id === currentChatId);
+            if (!chat) return;
+
+            chat.messages.push({ role: 'user', text: message });
+            addMessageToUI('user', message);
+            input.value = '';
+
+            if (chat.title === 'New chat' && chat.messages.length === 1) {
+                chat.title = message.substring(0, 30) + (message.length > 30 ? '...' : '');
+                renderChatList();
+            }
+
+            const sendBtn = document.getElementById('sendBtn');
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<span class="loading"></span> Think...';
+
+            try {
+                const context = `You are FHome AI, a smart AI assistant created by Sliz®. Keep your answers short and to the point. If asked your name, answer "FHome AI." If asked who created you, answer "Sliz®.".`;
+                
+                const response = await fetch(`${API_URL}?key=${API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{ text: context + '\n\nQuestion: ' + message }]
+                        }]
+                    })
+                });
+
+                const data = await response.json();
+                const aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Sorry, I can't answer.';
+
+                chat.messages.push({ role: 'ai', text: aiResponse });
+                addMessageToUI('ai', aiResponse);
+                saveData();
+
+            } catch (error) {
+                console.error('Error:', error);
+                const errorMsg = 'Error connecting AI. Try later.';
+                chat.messages.push({ role: 'ai', text: errorMsg });
+                addMessageToUI('ai', errorMsg);
+            }
+
+            sendBtn.disabled = false;
+            sendBtn.textContent = 'Send';
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') sendMessage();
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('hidden');
+        }
+
+        function openSettings() {
+            document.getElementById('userNameInput').value = settings.userName;
+            document.getElementById('userIconInput').value = settings.userIcon;
+            document.getElementById('aiNameInput').value = settings.aiName;
+            document.getElementById('radiusSlider').value = settings.messageRadius;
+            document.getElementById('radiusValue').textContent = settings.messageRadius + 'px';
+            document.getElementById('settingsModal').classList.add('active');
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsModal').classList.remove('active');
+        }
+
+        function updateRadius(value) {
+            document.getElementById('radiusValue').textContent = value + 'px';
+        }
+
+        function saveSettings() {
+            settings.userName = document.getElementById('userNameInput').value || 'Пользователь';
+            settings.userIcon = document.getElementById('userIconInput').value || settings.userIcon;
+            settings.aiName = document.getElementById('aiNameInput').value || 'FHome AI';
+            settings.messageRadius = parseInt(document.getElementById('radiusSlider').value);
+            
+            applySettings();
+            saveData();
+            closeSettings();
+            
+            if (currentChatId) loadChat(currentChatId);
+        }
+
+        function applySettings() {
+            document.documentElement.style.setProperty('--msg-radius', settings.messageRadius + 'px');
+        }
+
+        window.addEventListener('load', loadData);
+    </script>
 </body>
 </html>
