@@ -1,8 +1,4 @@
-    // =======================================================================================================================================================================================================================
-    // !!! This key is openly accessible for teachers, work verification, and personal use. The Gemini API is used here only for searching the Internet and correctly forming a response, but not for generating answers !!!
-    // =======================================================================================================================================================================================================================
-    const API_KEY = 'AIzaSyDCOie1DcxXFcMOOtHkbld8LaO9Nxck-5M';
-    const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+    const WORKER_URL = 'https://gemini-api-proxy.markd-voznyuk.workers.dev';
     
     function getSystemInstruction(userMessage) {
         return `
@@ -198,88 +194,91 @@
         container.scrollTop = container.scrollHeight;
     }
 
-    async function sendMessage() {
-        const input = document.getElementById('messageInput');
-        const sendBtn = document.getElementById('sendBtn');
-        const message = input.value.trim();
-        
-        if (!message) return;
+async function sendMessage() {
+    const input = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const message = input.value.trim();
+    
+    if (!message) return;
 
-        if (!currentChatId) {
-            createNewChat();
-        }
-
-        const chat = chats.find(c => c.id === currentChatId);
-        
-        chat.messages.push({ role: 'user', content: message });
-        
-        if (chat.messages.length === 1) {
-            chat.title = message.substring(0, 30) + (message.length > 30 ? '...' : '');
-        }
-
-        input.value = '';
-        renderChats();
-        renderMessages();
-
-        const container = document.getElementById('messagesContainer');
-        
-        const typingIndicator = document.createElement('div');
-        typingIndicator.className = 'message ai';
-        typingIndicator.innerHTML = `
-            <img src="icon.png" class="message-avatar" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Ccircle cx=\'50\' cy=\'50\' r=\'50\' fill=\'%232ea67d\'/%3E%3Ctext x=\'50\' y=\'50\' font-size=\'40\' text-anchor=\'middle\' dy=\'.3em\' fill=\'white\' font-family=\'Arial\'%3EF%3C/text%3E%3C/svg%3E'">
-            <div class="message-content">
-                <div class="typing-indicator">
-                    <div class="typing-dot"></div>
-                    <div class="typing-dot"></div>
-                    <div class="typing-dot"></div>
-                </div>
-            </div>
-        `;
-        container.appendChild(typingIndicator);
-        container.scrollTop = container.scrollHeight;
-
-        if (sendBtn) sendBtn.disabled = true;
-
-        try {
-            const apiContents = chat.messages.map(msg => ({
-                role: msg.role === 'user' ? 'user' : 'model',
-                parts: [{ text: msg.content }]
-            }));
-        
-            const lastUserMessageIndex = apiContents.length - 1;
-            if (apiContents[lastUserMessageIndex].role === 'user') {
-                const instruction = getSystemInstruction(apiContents[lastUserMessageIndex].parts[0].text);
-                apiContents[lastUserMessageIndex].parts[0].text = instruction;
-            }
-
-            const response = await fetch(`${API_URL}?key=${API_KEY}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: apiContents
-                })
-            });
-
-            const data = await response.json();
-            typingIndicator.remove();
-
-            if (data.candidates && data.candidates[0]) {
-                const aiMessage = data.candidates[0].content.parts[0].text;
-                chat.messages.push({ role: 'ai', content: aiMessage });
-            } else {
-                chat.messages.push({ role: 'ai', content: 'Sorry, I encountered an error processing your request (AI response failed).' });
-            }
-
-            saveToCookie();
-            renderMessages();
-        } catch (error) {
-            typingIndicator.remove();
-            chat.messages.push({ role: 'ai', content: 'Sorry, I couldn\'t connect to the AI service. Please try again (Network/API Error).' });
-            renderMessages();
-        }
-
-        if (sendBtn) sendBtn.disabled = false;
+    if (!currentChatId) {
+        createNewChat();
     }
+
+    const chat = chats.find(c => c.id === currentChatId);
+    
+    chat.messages.push({ role: 'user', content: message });
+    
+    if (chat.messages.length === 1) {
+        chat.title = message.substring(0, 30) + (message.length > 30 ? '...' : '');
+    }
+
+    input.value = '';
+    renderChats();
+    renderMessages();
+
+    const container = document.getElementById('messagesContainer');
+    
+    const typingIndicator = document.createElement('div');
+    typingIndicator.className = 'message ai';
+    typingIndicator.innerHTML = `
+        <img src="icon.png" class="message-avatar" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Ccircle cx=\'50\' cy=\'50\' r=\'50\' fill=\'%232ea67d\'/%3E%3Ctext x=\'50\' y=\'50\' font-size=\'40\' text-anchor=\'middle\' dy=\'.3em\' fill=\'white\' font-family=\'Arial\'%3EF%3C/text%3E%3C/svg%3E'">
+        <div class="message-content">
+            <div class="typing-indicator">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            </div>
+        </div>
+    `;
+    container.appendChild(typingIndicator);
+    container.scrollTop = container.scrollHeight;
+
+    if (sendBtn) sendBtn.disabled = true;
+
+    try {
+        const apiContents = chat.messages.map(msg => ({
+            role: msg.role === 'user' ? 'user' : 'model',
+            parts: [{ text: msg.content }]
+        }));
+    
+        const lastUserMessageIndex = apiContents.length - 1;
+        if (apiContents[lastUserMessageIndex].role === 'user') {
+            const instruction = getSystemInstruction(apiContents[lastUserMessageIndex].parts[0].text);
+            apiContents[lastUserMessageIndex].parts[0].text = instruction;
+        }
+
+        const response = await fetch(WORKER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: apiContents
+            })
+        });
+
+        const data = await response.json();
+        typingIndicator.remove();
+
+        if (data.candidates && data.candidates[0]) {
+            const aiMessage = data.candidates[0].content.parts[0].text;
+            chat.messages.push({ role: 'ai', content: aiMessage });
+        } else if (data.error) {
+            let errorMessage = `AI Response Error: ${data.error.message || JSON.stringify(data)}`;
+            chat.messages.push({ role: 'ai', content: `Sorry, I encountered an error processing your request. Details: ${errorMessage}` });
+        } else {
+            chat.messages.push({ role: 'ai', content: 'Sorry, I encountered an error processing your request (AI response failed).' });
+        }
+
+        saveToCookie();
+        renderMessages();
+    } catch (error) {
+        typingIndicator.remove();
+        chat.messages.push({ role: 'ai', content: `Sorry, I couldn't connect to the AI service. Details: ${error.message}` });
+        renderMessages();
+    }
+
+    if (sendBtn) sendBtn.disabled = false;
+}
 
     function handleKeyPress(event) {
         if (event.key === 'Enter') {
