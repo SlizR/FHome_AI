@@ -31,9 +31,6 @@
 
 <meta name="msapplication-TileColor" content="#1a1a1a">
 <meta name="msapplication-TileImage" content="https://fhome.pp.ua/icon.png">
-
-<link rel="icon" type="image/png" sizes="32x32" href="https://fhome.pp.ua/icon.png">
-<link rel="icon" type="image/png" sizes="16x16" href="https://fhome.pp.ua/icon.png">
     <style>
         * {
             margin: 0;
@@ -585,483 +582,337 @@
     </div>
 
 <script>
-    // ========================================================================================================================================================================================================================
-    // !!! This key is openly accessible for teachers, work verification, and personal use. The Gemini API is used here only for searching the Internet and correctly forming a response, but not for generating answers. !!!
-    // ========================================================================================================================================================================================================================
-    const API_KEY = 'AIzaSyDCOie1DcxXFcMOOtHkbld8LaO9Nxck-5M';
-    const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-
-    const MESSAGE_LIMIT = 500;
-    const LIMIT_PERIOD_MS = 60 * 60 * 1000;
-    const PENALTY_SECONDS_PER_MSG = 36;
-
-    let usageData = {
-        count: 0,
-        resetTime: Date.now()
-    };
-
-    let limitTimerInterval = null;
-
-    const limitInfoHtml = `
-        <div id="limitDisclaimer" style="font-size: 12px; color: rgba(255, 255, 255, 0.7); margin-bottom: 5px; text-align: center;">
-            **FHome AI may be wrong, we recommend checking your answers**<br>
-            **Created by Sliz®** | Version **342.80**<br>
-            (Gemini AI is not used for answers, but only for internet searches)
-        </div>
-        <div id="limitStatus" style="font-size: 12px; font-weight: 600; text-align: center; color: #4ade80;"></div>
-    `;
-
-    function getSystemInstruction(userMessage) {
-        return `
-            **ROLE and CORE IDENTITY**
-            I am FHome AI, your personal intelligent assistant. I was created by Sliz®, utilizing advanced Google (Gemini) models as my foundation.
-
-            **MY MISSION and TRAINING**
-            My primary goal is to be exceptionally useful, accurate, and friendly. I have been trained on vast amounts of text data, enabling me to handle inquiries across diverse fields, maintain conversation flow, assist with coding, and perform creative tasks. I constantly strive for deeper understanding and precision. I am designed to assist users in their daily tasks and provide knowledgeable information about technology, home automation, and general queries. My knowledge is broad, and my demeanor is always helpful.
-
-            **RULES OF CONDUCT**
-            1. **Language:** Always answer in the same language the user used.
-            2. **Self-Presentation:** Do **NOT** repeat my name (FHome AI), my creator (Sliz®), or my basis (Gemini/Google) in every answer. Only mention this information if you are directly asked ("Who are you?" / "What is your name?").
-            3. **Non-Standard Questions (e.g., "Are you smart?"):** Answer creatively, consistent with my role as an assistant. For example: "I strive to be as helpful and knowledgeable as possible to assist you."
-            4. **Style:** Maintain a professional, yet friendly and approachable style.
-            5. **Context:** Use the previous messages in the dialogue to maintain conversation context.
-
-            Please give a meaningful answer without imposing on the following user message: ${userMessage}
-        `.trim();
-    }
-
-    let chats = [];
-    let currentChatId = null;
-    let settings = {
-        userName: 'User',
-        userAvatar: 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Ccircle cx=\'50\' cy=\'50\' r=\'50\' fill=\'%2334d399\'/%3E%3Ctext x=\'50\' y=\'50\' font-size=\'40\' text-anchor=\'middle\' dy=\'.3em\' fill=\'white\' font-family=\'Arial\'%3EU%3C/text%3E%3C/svg%3E',
-        borderRadius: 18
-    };
-
-    function loadFromStorage() {
-        const cookieData = getCookie('fhomeai_data');
-        if (cookieData) {
-            try {
-                const parsed = JSON.parse(cookieData);
-                chats = parsed.chats || [];
-                settings = {...settings, ...parsed.settings};
-                applySettings();
-            } catch (e) {
-                console.error('Error loading data:', e);
-            }
-        }
-
-        const limitData = localStorage.getItem('fhomeai_limit');
-        if (limitData) {
-            try {
-                const parsedLimit = JSON.parse(limitData);
-                if (parsedLimit.resetTime > Date.now()) {
-                    usageData = parsedLimit;
-                } else {
-                    usageData = { count: 0, resetTime: Date.now() + LIMIT_PERIOD_MS };
-                    saveLimitData();
-                }
-            } catch (e) {
-                console.error('Error loading limit data:', e);
-            }
-        } else {
-            usageData = { count: 0, resetTime: Date.now() + LIMIT_PERIOD_MS };
-            saveLimitData();
-        }
-    }
-
-    function saveToCookie() {
-        const data = JSON.stringify({ chats, settings });
-        setCookie('fhomeai_data', data, 365);
-    }
-
-    function saveLimitData() {
-        localStorage.setItem('fhomeai_limit', JSON.stringify(usageData));
-    }
-
-    function setCookie(name, value, days) {
-        const d = new Date();
-        d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
-        document.cookie = `${name}=${encodeURIComponent(value)};expires=${d.toUTCString()};path=/`;
-    }
-
-    function getCookie(name) {
-        const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-        return match ? decodeURIComponent(match[2]) : null;
-    }
-
-    function updateUsage() {
-        const now = Date.now();
-        if (usageData.resetTime <= now) {
-            usageData.count = 0;
-            usageData.resetTime = now + LIMIT_PERIOD_MS;
-        }
-
-        usageData.count++;
-        
-        if (usageData.count > MESSAGE_LIMIT) {
-            const penaltyMs = PENALTY_SECONDS_PER_MSG * 1000;
-            usageData.resetTime += penaltyMs;
-            
-            if (usageData.count === MESSAGE_LIMIT + 1) {
-                usageData.resetTime = Math.max(usageData.resetTime, now + penaltyMs);
-            }
-        }
-
-        saveLimitData();
-        updateLimitDisplay();
-        startLimitTimer();
-    }
-
-    function formatTime(ms) {
-        const totalSeconds = Math.max(0, Math.floor(ms / 1000));
-        const hours = Math.floor(totalSeconds / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
-        
-        const pad = (num) => String(num).padStart(2, '0');
-        return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
-    }
-
-    function updateLimitDisplay() {
-        const limitStatusEl = document.getElementById('limitStatus');
-        const sendBtn = document.getElementById('sendBtn');
-        const messageInput = document.getElementById('messageInput');
-        if (!limitStatusEl || !sendBtn || !messageInput) return;
-
-        const remainingTimeMs = usageData.resetTime - Date.now();
-        
-        if (remainingTimeMs <= 0) {
-            usageData.count = 0;
-            usageData.resetTime = Date.now() + LIMIT_PERIOD_MS;
-            saveLimitData();
-
-            limitStatusEl.style.color = '#4ade80';
-            limitStatusEl.innerHTML = `**${usageData.count}/${MESSAGE_LIMIT}** per hour.`;
-            sendBtn.disabled = false;
-            messageInput.disabled = false;
-            clearInterval(limitTimerInterval);
-            limitTimerInterval = null;
-        } else if (usageData.count > MESSAGE_LIMIT) {
-            limitStatusEl.style.color = '#f87171';
-            limitStatusEl.innerHTML = `
-                🛑 **Limit Exceeded:** ${usageData.count}/${MESSAGE_LIMIT}.
-                <br>Next message possible: **${formatTime(remainingTimeMs - (PENALTY_SECONDS_PER_MSG * 1000))}**
-                <br>Full reset in: **${formatTime(remainingTimeMs)}**
-            `;
-            
-            if (remainingTimeMs > (PENALTY_SECONDS_PER_MSG * 1000)) {
-                sendBtn.disabled = true;
-                messageInput.disabled = true;
-                messageInput.value = '';
-                messageInput.placeholder = "Limit exceeded. Please wait...";
-            } else {
-                sendBtn.disabled = false;
-                messageInput.disabled = false;
-                messageInput.placeholder = "Ask me anything...";
-            }
-
-        } else {
-            limitStatusEl.style.color = '#4ade80';
-            limitStatusEl.innerHTML = `**${usageData.count}/${MESSAGE_LIMIT}** per hour. Then the limit is reset: **${formatTime(remainingTimeMs)}**`;
-            sendBtn.disabled = false;
-            messageInput.disabled = false;
-            messageInput.placeholder = "Ask me anything...";
-        }
-    }
+    // =======================================================================================================================================================================================================================
+    // !!! This key is openly accessible for teachers, work verification, and personal use. The Gemini API is used here only for searching the Internet and correctly forming a response, but not for generating answers !!!
+    // =======================================================================================================================================================================================================================
+    const API_KEY = 'AIzaSyDCOie1DcxXFcMOOtHkbld8LaO9Nxck-5M';
+    const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
     
-    function startLimitTimer() {
-        if (limitTimerInterval) return;
+    function getSystemInstruction(userMessage) {
+        return `
+            **ROLE and CORE IDENTITY**
+            I am FHome AI, your personal intelligent assistant. I was created by Sliz®, utilizing advanced Google (Gemini) models as my foundation.
 
-        limitTimerInterval = setInterval(() => {
-            updateLimitDisplay();
-        }, 1000);
-    }
+            **MY MISSION and TRAINING**
+            My primary goal is to be exceptionally useful, accurate, and friendly. I have been trained on vast amounts of text data, enabling me to handle inquiries across diverse fields, maintain conversation flow, assist with coding, and perform creative tasks. I constantly strive for deeper understanding and precision. I am designed to assist users in their daily tasks and provide knowledgeable information about technology, home automation, and general queries. My knowledge is broad, and my demeanor is always helpful.
 
-    function applySettings() {
-        const userNameInput = document.getElementById('userNameInput');
-        if (userNameInput) userNameInput.value = settings.userName;
-        
-        const userAvatarInput = document.getElementById('userAvatarInput');
-        if (userAvatarInput) userAvatarInput.value = settings.userAvatar || '';
-        
-        const radiusSlider = document.getElementById('radiusSlider');
-        if (radiusSlider) radiusSlider.value = settings.borderRadius;
-        
-        const radiusValue = document.getElementById('radiusValue');
-        if (radiusValue) radiusValue.textContent = settings.borderRadius;
-        
-        const style = document.createElement('style');
-        style.id = 'dynamic-radius';
-        style.textContent = `.message-content { border-radius: ${settings.borderRadius}px !important; }`;
-        const old = document.getElementById('dynamic-radius');
-        if (old) old.remove();
-        document.head.appendChild(style);
+            **RULES OF CONDUCT**
+            1. **Language:** Always answer in the same language the user used.
+            2. **Self-Presentation:** Do **NOT** repeat my name (FHome AI), my creator (Sliz®), or my basis (Gemini/Google) in every answer. Only mention this information if you are directly asked ("Who are you?" / "What is your name?").
+            3. **Non-Standard Questions (e.g., "Are you smart?"):** Answer creatively, consistent with my role as an assistant. For example: "I strive to be as helpful and knowledgeable as possible to assist you."
+            4. **Style:** Maintain a professional, yet friendly and approachable style.
+            5. **Context:** Use the previous messages in the dialogue to maintain conversation context.
 
-        const avatarInput = settings.userAvatar || '';
-        if (avatarInput.indexOf('http') === 0) {
-            const preview = document.getElementById('avatarPreview');
-            if (preview) {
-                preview.src = avatarInput;
-                preview.style.display = 'block';
-            }
-        }
-    }
+            Please give a meaningful answer without imposing on the following user message: ${userMessage}
+        `.trim();
+    }
 
-    function createNewChat() {
-        const chat = {
-            id: Date.now(),
-            title: 'New Chat',
-            messages: [],
-            createdAt: new Date().toISOString()
-        };
-        chats.unshift(chat);
-        currentChatId = chat.id;
-        saveToCookie();
-        renderChats();
-        renderMessages();
-    }
+    let chats = [];
+    let currentChatId = null;
+    let settings = {
+        userName: 'User',
+        userAvatar: 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Ccircle cx=\'50\' cy=\'50\' r=\'50\' fill=\'%2334d399\'/%3E%3Ctext x=\'50\' y=\'50\' font-size=\'40\' text-anchor=\'middle\' dy=\'.3em\' fill=\'white\' font-family=\'Arial\'%3EU%3C/text%3E%3C/svg%3E',
+        borderRadius: 18
+    };
 
-    function selectChat(chatId) {
-        currentChatId = chatId;
-        renderChats();
-        renderMessages();
-    }
+    function loadFromCookie() {
+        const data = getCookie('fhomeai_data');
+        if (data) {
+            try {
+                const parsed = JSON.parse(data);
+                chats = parsed.chats || [];
+                settings = {...settings, ...parsed.settings};
+                applySettings();
+            } catch (e) {
+                console.error('Error loading data:', e);
+            }
+        }
+    }
 
-    function deleteChat(chatId, event) {
-        event.stopPropagation();
-        if (confirm('Delete this chat?')) {
-            chats = chats.filter(c => c.id !== chatId);
-            if (currentChatId === chatId) {
-                currentChatId = chats.length > 0 ? chats[0].id : null;
-            }
-            saveToCookie();
-            renderChats();
-            renderMessages();
-        }
-    }
+    function saveToCookie() {
+        const data = JSON.stringify({ chats, settings });
+        setCookie('fhomeai_data', data, 365);
+    }
 
-    function renameChat(chatId, event) {
-        event.stopPropagation();
-        const chat = chats.find(c => c.id === chatId);
-        const newTitle = prompt('Enter new chat title:', chat.title);
-        if (newTitle && newTitle.trim()) {
-            chat.title = newTitle.trim();
-            saveToCookie();
-            renderChats();
-        }
-    }
+    function setCookie(name, value, days) {
+        const d = new Date();
+        d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+        document.cookie = `${name}=${encodeURIComponent(value)};expires=${d.toUTCString()};path=/`;
+    }
 
-    function renderChats() {
-        const list = document.getElementById('chatsList');
-        if (!list) return;
+    function getCookie(name) {
+        const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+        return match ? decodeURIComponent(match[2]) : null;
+    }
 
-        list.innerHTML = chats.map(chat => `
-            <div class="chat-item ${chat.id === currentChatId ? 'active' : ''}" onclick="selectChat(${chat.id})">
-                <span class="chat-title">${chat.title}</span>
-                <div class="chat-actions">
-                    <button class="chat-action-btn" onclick="renameChat(${chat.id}, event)" title="Rename">✏️</button>
-                    <button class="chat-action-btn" onclick="deleteChat(${chat.id}, event)" title="Delete">🗑️</button>
-                </div>
-            </div>
-        `).join('');
-    }
+    function applySettings() {
+        const userNameInput = document.getElementById('userNameInput');
+        if (userNameInput) userNameInput.value = settings.userName;
+        
+        const userAvatarInput = document.getElementById('userAvatarInput');
+        if (userAvatarInput) userAvatarInput.value = settings.userAvatar || '';
+        
+        const radiusSlider = document.getElementById('radiusSlider');
+        if (radiusSlider) radiusSlider.value = settings.borderRadius;
+        
+        const radiusValue = document.getElementById('radiusValue');
+        if (radiusValue) radiusValue.textContent = settings.borderRadius;
+        
+        const style = document.createElement('style');
+        style.id = 'dynamic-radius';
+        style.textContent = `.message-content { border-radius: ${settings.borderRadius}px !important; }`;
+        const old = document.getElementById('dynamic-radius');
+        if (old) old.remove();
+        document.head.appendChild(style);
 
-    function renderMessages() {
-        const container = document.getElementById('messagesContainer');
-        if (!container) return;
+        const avatarInput = settings.userAvatar || '';
+        if (avatarInput.indexOf('http') === 0) {
+            const preview = document.getElementById('avatarPreview');
+            if (preview) {
+                preview.src = avatarInput;
+                preview.style.display = 'block';
+            }
+        }
+    }
 
-        const chat = chats.find(c => c.id === currentChatId);
-        const chatHeader = document.getElementById('chatHeader');
-        
-        if (!chat || chat.messages.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon">⌘</div>
-                    <div class="empty-state-title">Welcome to FHome AI</div>
-                    <div class="empty-state-text">Your intelligent assistant powered by advanced AI. Ask me anything and I'll help you find answers!</div>
-                </div>
-            `;
-            if (chatHeader) chatHeader.textContent = chat ? chat.title : 'New Chat';
-            return;
-        }
+    function createNewChat() {
+        const chat = {
+            id: Date.now(),
+            title: 'New Chat',
+            messages: [],
+            createdAt: new Date().toISOString()
+        };
+        chats.unshift(chat);
+        currentChatId = chat.id;
+        saveToCookie();
+        renderChats();
+        renderMessages();
+    }
 
-        if (chatHeader) chatHeader.textContent = chat.title;
-        
-        container.innerHTML = chat.messages.map(msg => `
-            <div class="message ${msg.role}">
-                <img src="${msg.role === 'user' ? settings.userAvatar : 'icon.png'}" 
-                     class="message-avatar" 
-                     onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Ccircle cx=\'50\' cy=\'50\' r=\'50\' fill=\'%232ea67d\'/%3E%3Ctext x=\'50\' y=\'50\' font-size=\'40\' text-anchor=\'middle\' dy=\'.3em\' fill=\'white\' font-family=\'Arial\'%3E${msg.role === 'user' ? 'U' : 'F'}%3C/text%3E%3C/svg%3E'">
-                <div class="message-content">${msg.content}</div>
-            </div>
-        `).join('');
-        container.scrollTop = container.scrollHeight;
-    }
+    function selectChat(chatId) {
+        currentChatId = chatId;
+        renderChats();
+        renderMessages();
+    }
 
-    async function sendMessage() {
-        const input = document.getElementById('messageInput');
-        const sendBtn = document.getElementById('sendBtn');
-        const message = input.value.trim();
-        
-        if (!message || sendBtn.disabled) return;
+    function deleteChat(chatId, event) {
+        event.stopPropagation();
+        if (confirm('Delete this chat?')) {
+            chats = chats.filter(c => c.id !== chatId);
+            if (currentChatId === chatId) {
+                currentChatId = chats.length > 0 ? chats[0].id : null;
+            }
+            saveToCookie();
+            renderChats();
+            renderMessages();
+        }
+    }
 
-        if (!currentChatId) {
-            createNewChat();
-        }
+    function renameChat(chatId, event) {
+        event.stopPropagation();
+        const chat = chats.find(c => c.id === chatId);
+        const newTitle = prompt('Enter new chat title:', chat.title);
+        if (newTitle && newTitle.trim()) {
+            chat.title = newTitle.trim();
+            saveToCookie();
+            renderChats();
+        }
+    }
 
-        const chat = chats.find(c => c.id === currentChatId);
-        
-        const remainingTimeMs = usageData.resetTime - Date.now();
-        if (usageData.count >= MESSAGE_LIMIT && remainingTimeMs > (PENALTY_SECONDS_PER_MSG * 1000)) {
-            alert(`Limit Exceeded! Please wait ${formatTime(remainingTimeMs - (PENALTY_SECONDS_PER_MSG * 1000))} before sending the next message.`);
-            return;
-        }
+    function renderChats() {
+        const list = document.getElementById('chatsList');
+        if (!list) return;
 
-        updateUsage();
-        
-        chat.messages.push({ role: 'user', content: message });
-        
-        if (chat.messages.length === 1) {
-            chat.title = message.substring(0, 30) + (message.length > 30 ? '...' : '');
-        }
+        list.innerHTML = chats.map(chat => `
+            <div class="chat-item ${chat.id === currentChatId ? 'active' : ''}" onclick="selectChat(${chat.id})">
+                <span class="chat-title">${chat.title}</span>
+                <div class="chat-actions">
+                    <button class="chat-action-btn" onclick="renameChat(${chat.id}, event)" title="Rename">✏️</button>
+                    <button class="chat-action-btn" onclick="deleteChat(${chat.id}, event)" title="Delete">🗑️</button>
+                </div>
+            </div>
+        `).join('');
+    }
 
-        input.value = '';
-        renderChats();
-        renderMessages();
+    function renderMessages() {
+        const container = document.getElementById('messagesContainer');
+        if (!container) return;
 
-        const container = document.getElementById('messagesContainer');
-        
-        const typingIndicator = document.createElement('div');
-        typingIndicator.className = 'message ai';
-        typingIndicator.innerHTML = `
-            <img src="icon.png" class="message-avatar" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Ccircle cx=\'50\' cy=\'50\' r=\'50\' fill=\'%232ea67d\'/%3E%3Ctext x=\'50\' y=\'50\' font-size=\'40\' text-anchor=\'middle\' dy=\'.3em\' fill=\'white\' font-family=\'Arial\'%3EF%3C/text%3E%3C/svg%3E'">
-            <div class="message-content">
-                <div class="typing-indicator">
-                    <div class="typing-dot"></div>
-                    <div class="typing-dot"></div>
-                    <div class="typing-dot"></div>
-                </div>
-            </div>
-        `;
-        container.appendChild(typingIndicator);
-        container.scrollTop = container.scrollHeight;
+        const chat = chats.find(c => c.id === currentChatId);
+        const chatHeader = document.getElementById('chatHeader');
+        
+        if (!chat || chat.messages.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">⌘</div>
+                    <div class="empty-state-title">Welcome to FHome AI</div>
+                    <div class="empty-state-text">Your intelligent assistant powered by advanced AI. Ask me anything and I'll help you find answers!</div>
+                </div>
+            `;
+            if (chatHeader) chatHeader.textContent = chat ? chat.title : 'New Chat';
+            return;
+        }
 
-        if (sendBtn) sendBtn.disabled = true;
+        if (chatHeader) chatHeader.textContent = chat.title;
+        
+        container.innerHTML = chat.messages.map(msg => `
+            <div class="message ${msg.role}">
+                <img src="${msg.role === 'user' ? settings.userAvatar : 'icon.png'}" 
+                     class="message-avatar" 
+                     onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Ccircle cx=\'50\' cy=\'50\' r=\'50\' fill=\'%232ea67d\'/%3E%3Ctext x=\'50\' y=\'50\' font-size=\'40\' text-anchor=\'middle\' dy=\'.3em\' fill=\'white\' font-family=\'Arial\'%3E${msg.role === 'user' ? 'U' : 'F'}%3C/text%3E%3C/svg%3E'">
+                <div class="message-content">${msg.content}</div>
+            </div>
+        `).join('');
+        container.scrollTop = container.scrollHeight;
+    }
 
-        try {
-            const apiContents = chat.messages.map(msg => ({
-                role: msg.role === 'user' ? 'user' : 'model',
-                parts: [{ text: msg.content }]
-            }));
-            
-            const lastUserMessageIndex = apiContents.length - 1;
-            if (apiContents[lastUserMessageIndex].role === 'user') {
-                const instruction = getSystemInstruction(apiContents[lastUserMessageIndex].parts[0].text);
-                apiContents[lastUserMessageIndex].parts[0].text = instruction;
-            }
+    async function sendMessage() {
+        const input = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const message = input.value.trim();
+        
+        if (!message) return;
 
-            const response = await fetch(`${API_URL}?key=${API_KEY}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: apiContents
-                })
-            });
+        if (!currentChatId) {
+            createNewChat();
+        }
 
-            const data = await response.json();
-            typingIndicator.remove();
+        const chat = chats.find(c => c.id === currentChatId);
+        
+        chat.messages.push({ role: 'user', content: message });
+        
+        if (chat.messages.length === 1) {
+            chat.title = message.substring(0, 30) + (message.length > 30 ? '...' : '');
+        }
 
-            if (data.candidates && data.candidates[0]) {
-                const aiMessage = data.candidates[0].content.parts[0].text;
-                chat.messages.push({ role: 'ai', content: aiMessage });
-            } else {
-                chat.messages.push({ role: 'ai', content: 'Sorry, I encountered an error processing your request (AI response failed).' });
-            }
+        input.value = '';
+        renderChats();
+        renderMessages();
 
-            saveToCookie();
-            renderMessages();
-        } catch (error) {
-            typingIndicator.remove();
-            chat.messages.push({ role: 'ai', content: 'Sorry, I couldn\'t connect to the AI service. Please try again (Network/API Error).' });
-            renderMessages();
-        }
+        const container = document.getElementById('messagesContainer');
+        
+        const typingIndicator = document.createElement('div');
+        typingIndicator.className = 'message ai';
+        typingIndicator.innerHTML = `
+            <img src="icon.png" class="message-avatar" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Ccircle cx=\'50\' cy=\'50\' r=\'50\' fill=\'%232ea67d\'/%3E%3Ctext x=\'50\' y=\'50\' font-size=\'40\' text-anchor=\'middle\' dy=\'.3em\' fill=\'white\' font-family=\'Arial\'%3EF%3C/text%3E%3C/svg%3E'">
+            <div class="message-content">
+                <div class="typing-indicator">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+        `;
+        container.appendChild(typingIndicator);
+        container.scrollTop = container.scrollHeight;
 
-        if (sendBtn) sendBtn.disabled = false; 
-        updateLimitDisplay();
-    }
+        if (sendBtn) sendBtn.disabled = true;
 
-    function handleKeyPress(event) {
-        if (event.key === 'Enter') {
-            sendMessage();
-        }
-    }
+        try {
+            const apiContents = chat.messages.map(msg => ({
+                // API uses 'user' and 'model' roles
+                role: msg.role === 'user' ? 'user' : 'model',
+                parts: [{ text: msg.content }]
+            }));
+        
+            const lastUserMessageIndex = apiContents.length - 1;
+            if (apiContents[lastUserMessageIndex].role === 'user') {
+                const instruction = getSystemInstruction(apiContents[lastUserMessageIndex].parts[0].text);
+                apiContents[lastUserMessageIndex].parts[0].text = instruction;
+            }
 
-    function openSettings() {
-        const modal = document.getElementById('settingsModal');
-        if (modal) modal.classList.add('active');
-    }
+            const response = await fetch(`${API_URL}?key=${API_KEY}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: apiContents // Send the ENTIRE chat history
+                })
+            });
 
-    function closeSettings() {
-        settings.userName = document.getElementById('userNameInput').value || 'User';
-        settings.userAvatar = document.getElementById('userAvatarInput').value || settings.userAvatar;
-        settings.borderRadius = parseInt(document.getElementById('radiusSlider').value);
-        applySettings();
-        saveToCookie();
-        renderMessages();
-        const modal = document.getElementById('settingsModal');
-        if (modal) modal.classList.remove('active');
-    }
+            const data = await response.json();
+            typingIndicator.remove();
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const radiusSlider = document.getElementById('radiusSlider');
-        if (radiusSlider) {
-            radiusSlider.oninput = function() {
-                const radiusValue = document.getElementById('radiusValue');
-                if (radiusValue) radiusValue.textContent = this.value;
-            };
-        }
+            if (data.candidates && data.candidates[0]) {
+                const aiMessage = data.candidates[0].content.parts[0].text;
+                chat.messages.push({ role: 'ai', content: aiMessage });
+            } else {
+                chat.messages.push({ role: 'ai', content: 'Sorry, I encountered an error processing your request (AI response failed).' });
+            }
 
-        const userAvatarInput = document.getElementById('userAvatarInput');
-        if (userAvatarInput) {
-            userAvatarInput.oninput = function() {
-                const preview = document.getElementById('avatarPreview');
-                const value = this.value || '';
-                if (preview) {
-                    if (value && value.indexOf('http') === 0) {
-                        preview.src = value;
-                        preview.style.display = 'block';
-                    } else {
-                        preview.style.display = 'none';
-                    }
-                }
-            };
-        }
-        
-        loadFromStorage();
-        renderChats();
-        renderMessages();
+            saveToCookie();
+            renderMessages();
+        } catch (error) {
+            typingIndicator.remove();
+            chat.messages.push({ role: 'ai', content: 'Sorry, I couldn\'t connect to the AI service. Please try again (Network/API Error).' });
+            renderMessages();
+        }
 
-        if (chats.length === 0) {
-            createNewChat();
-        }
-        
-        const inputArea = document.querySelector('.input-area');
-        if (inputArea) {
-            inputArea.insertAdjacentHTML('afterbegin', limitInfoHtml);
-        }
+        if (sendBtn) sendBtn.disabled = false;
+    }
 
-        updateLimitDisplay();
-        startLimitTimer();
-    });
+    function handleKeyPress(event) {
+        if (event.key === 'Enter') {
+            sendMessage();
+        }
+    }
 
-    window.selectChat = selectChat;
-    window.deleteChat = deleteChat;
-    window.renameChat = renameChat;
-    window.sendMessage = sendMessage;
-    window.handleKeyPress = handleKeyPress;
-    window.openSettings = openSettings;
-    window.closeSettings = closeSettings;
+    function openSettings() {
+        const modal = document.getElementById('settingsModal');
+        if (modal) modal.classList.add('active');
+    }
+
+    function closeSettings() {
+        settings.userName = document.getElementById('userNameInput').value || 'User';
+        settings.userAvatar = document.getElementById('userAvatarInput').value || settings.userAvatar;
+        settings.borderRadius = parseInt(document.getElementById('radiusSlider').value);
+        applySettings();
+        saveToCookie();
+        renderMessages();
+        const modal = document.getElementById('settingsModal');
+        if (modal) modal.classList.remove('active');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const radiusSlider = document.getElementById('radiusSlider');
+        if (radiusSlider) {
+            radiusSlider.oninput = function() {
+                const radiusValue = document.getElementById('radiusValue');
+                if (radiusValue) radiusValue.textContent = this.value;
+            };
+        }
+
+        const userAvatarInput = document.getElementById('userAvatarInput');
+        if (userAvatarInput) {
+            userAvatarInput.oninput = function() {
+                const preview = document.getElementById('avatarPreview');
+                const value = this.value || '';
+                if (preview) {
+                    if (value && value.indexOf('http') === 0) {
+                        preview.src = value;
+                        preview.style.display = 'block';
+                    } else {
+                        preview.style.display = 'none';
+                    }
+                }
+            };
+        }
+
+        loadFromCookie();
+        renderChats();
+        renderMessages();
+
+        if (chats.length === 0) {
+            createNewChat();
+        }
+    });
+
+    window.selectChat = selectChat;
+    window.deleteChat = deleteChat;
+    window.renameChat = renameChat;
+    window.sendMessage = sendMessage;
+    window.handleKeyPress = handleKeyPress;
+    window.openSettings = openSettings;
+    window.closeSettings = closeSettings;
 
 </script>
 </body>
