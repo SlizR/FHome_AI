@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChROOG: Sci-Fi FPS</title>
+    <!-- Tailwind CSS for modern and responsive UI/HUD -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Three.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/PointerLockControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js"></script>
+    <!-- Post-Processing Effects (Simplified for a single file) -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/postprocessing/EffectComposer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/postprocessing/RenderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/shaders/CopyShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/postprocessing/ShaderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/shaders/LuminosityShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/postprocessing/UnrealBloomPass.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+        body { margin: 0; overflow: hidden; background-color: #000; font-family: 'Orbitron', sans-serif; }
+        canvas { display: block; }
+
+        /* Стили для HUD и меню */
+        #ui-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Позволяет кликать сквозь него, если не активно меню */
+            z-index: 100;
+        }
+
+        .menu-overlay {
+            pointer-events: all;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .hud-text {
+            text-shadow: 0 0 5px #00f, 0 0 10px #f00;
+        }
+
+        .neon-title {
+            font-size: 6rem;
+            color: #fff;
+            text-shadow: 0 0 10px #00f, 0 0 20px #00f, 0 0 30px #f00, 0 0 40px #f00;
+            animation: flicker 1.5s infinite alternate;
+            user-select: none;
+        }
+
+        .neon-button {
+            transition: all 0.3s ease;
+            box-shadow: 0 0 5px #0ff, 0 0 10px #0ff, 0 0 15px #f00;
+            border: 2px solid #0ff;
+            color: #fff;
+            background-color: rgba(0, 50, 50, 0.2);
+        }
+        .neon-button:hover {
+            box-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 30px #f00, 0 0 40px #f00;
+            background-color: rgba(0, 50, 50, 0.5);
+            transform: scale(1.05);
+        }
+
+        @keyframes flicker {
+            0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; }
+            20%, 24%, 55% { opacity: 0.8; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Главный контейнер для UI/HUD -->
+<div id="ui-container" class="select-none">
+    <!-- Главное меню -->
+    <div id="main-menu" class="menu-overlay absolute inset-0 hidden">
+        <h1 class="neon-title">ChROOG</h1>
+        <button id="btn-start" class="neon-button text-3xl p-4 w-64 rounded-lg">НАЧАТЬ ИГРУ</button>
+        <button id="btn-options-main" class="neon-button text-xl p-3 w-48 rounded-lg">НАСТРОЙКИ</button>
+        <button id="btn-credits" class="neon-button text-xl p-3 w-48 rounded-lg">АВТОРЫ</button>
+        <button id="btn-exit" class="neon-button text-xl p-3 w-48 rounded-lg">ВЫХОД</button>
+    </div>
+
+    <!-- Меню паузы -->
+    <div id="pause-menu" class="menu-overlay absolute inset-0 hidden">
+        <h2 class="neon-title text-5xl">ПАУЗА</h2>
+        <button id="btn-resume" class="neon-button text-3xl p-4 w-64 rounded-lg">ПРОДОЛЖИТЬ</button>
+        <button id="btn-options-pause" class="neon-button text-xl p-3 w-48 rounded-lg">НАСТРОЙКИ</button>
+        <button id="btn-exit-to-main" class="neon-button text-xl p-3 w-48 rounded-lg">ВЫЙТИ В МЕНЮ</button>
+    </div>
+
+    <!-- Меню настроек -->
+    <div id="options-menu" class="menu-overlay absolute inset-0 hidden">
+        <h2 class="neon-title text-4xl mb-8">НАСТРОЙКИ</h2>
+
+        <div class="w-80 space-y-4 text-white">
+            <div class="flex justify-between items-center p-3 border-b border-cyan-500">
+                <label for="mouse-sensitivity">Чувствительность мыши:</label>
+                <input type="range" id="mouse-sensitivity" min="0.1" max="2.0" step="0.05" value="0.5" class="w-1/2">
+                <span id="mouse-sensitivity-value">0.5</span>
+            </div>
+            <div class="flex justify-between items-center p-3 border-b border-cyan-500">
+                <label for="volume-slider">Громкость:</label>
+                <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.5" class="w-1/2">
+                <span id="volume-slider-value">50%</span>
+            </div>
+            <div class="flex justify-between items-center p-3 border-b border-cyan-500">
+                <label>Графика:</label>
+                <select id="graphics-quality" class="bg-gray-800 text-white p-2 rounded w-1/2">
+                    <option value="High">ВЫСОКОЕ (Тени, Bloom)</option>
+                    <option value="Medium">СРЕДНЕЕ (Тени)</option>
+                    <option value="Low">НИЗКОЕ (Базовое)</option>
+                </select>
+            </div>
+        </div>
+
+        <button id="btn-back-options" class="neon-button text-xl p-3 w-48 rounded-lg mt-8">НАЗАД</button>
+    </div>
+
+    <!-- In-Game HUD -->
+    <div id="hud" class="absolute inset-0 p-8 hidden">
+        <!-- Левый верхний угол: Здоровье -->
+        <div class="absolute top-8 left-8 w-64">
+            <div class="text-white text-lg mb-1 hud-text">ЗДОРОВЬЕ: <span id="health-value">100</span>%</div>
+            <div class="w-full bg-gray-700 h-4 rounded-full border border-red-500">
+                <div id="health-bar" class="h-full bg-red-600 rounded-full transition-all duration-300" style="width: 100%;"></div>
+            </div>
+        </div>
+
+        <!-- Правый нижний угол: Боеприпасы и Оружие -->
+        <div class="absolute bottom-8 right-8 text-right">
+            <div class="text-white text-3xl hud-text" id="ammo-display">20 / 180</div>
+            <div class="text-white text-lg hud-text" id="weapon-display">ПЛАЗМОПУШКА</div>
+            <div id="reload-indicator" class="text-yellow-400 text-xl mt-2 hidden hud-text">ПЕРЕЗАРЯДКА...</div>
+        </div>
+
+        <!-- Центр: Перекрестие -->
+        <div class="absolute inset-0 flex justify-center items-center pointer-events-none">
+            <div id="crosshair" class="w-4 h-4 text-3xl font-bold text-red-500 hud-text" style="line-height: 1;">+</div>
+        </div>
+
+        <!-- Сообщения (для подбора патронов) -->
+        <div id="message-box" class="absolute bottom-1/2 left-1/2 transform -translate-x-1/2 translate-y-full text-center text-yellow-400 text-2xl bg-black bg-opacity-70 p-2 rounded hidden hud-text">
+            Нажмите [E] чтобы подобрать Патроны (100)
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    // ====================================================================
+    // 1. Инициализация и Глобальные переменные
+    // ====================================================================
+
+    // Глобальное состояние игры
+    const GAME_STATE = {
+        MENU: 'MENU',
+        PLAYING: 'PLAYING',
+        PAUSED: 'PAUSED',
+        OPTIONS: 'OPTIONS',
+        LOADING: 'LOADING',
+    };
+    let currentState = GAME_STATE.LOADING;
+
+    // Three.js
+    let scene, camera, renderer, controls;
+    let clock = new THREE.Clock();
+    let composer; // Для постэффектов
+
+    // Физика и игрок
+    let player = {
+        health: 100,
+        maxHealth: 100,
+        moveSpeed: 5,
+        damageTakenTime: 0, // Время последнего получения урона (для регенерации)
+        isRegenActive: false,
+        velocity: new THREE.Vector3(),
+        direction: new THREE.Vector3(),
+        canJump: true,
+        collisionChecks: [], // Объекты для проверки коллизий
+        mesh: null, // Меш игрока (для коллизий с врагами)
+    };
+
+    // Оружие и боеприпасы
+    const WEAPON_CONFIG = {
+        MAG_SIZE: 20,
+        MAX_AMMO: 200,
+        PICKUP_AMMO: 100,
+        FIRE_RATE: 0.2, // Скорострельность (выстрелов в секунду)
+        RELOAD_TIME: 2.5,
+    };
+    let ammo = {
+        currentMag: WEAPON_CONFIG.MAG_SIZE,
+        totalReserve: WEAPON_CONFIG.MAX_AMMO - WEAPON_CONFIG.MAG_SIZE,
+        isReloading: false,
+        lastShotTime: 0,
+        isShooting: false,
+        // TODO: Добавить другие оружия
+    };
+    let playerGun = null; // THREE.Mesh для модели оружия
+    let playerGunModel; // GLTF Scene
+
+    // Настройки
+    let settings = {
+        mouseSensitivity: 0.5,
+        volume: 0.5,
+        graphicsQuality: 'High',
+    };
+    let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
+
+    // Враги
+    let enemies = [];
+    let enemyTemplate = null; // GLTF Scene для врагов
+
+    // Audio
+    let listener, footstepSound, shootSound;
+    const soundUrls = {
+        footstep: 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/sounds/move.ogg',
+        shoot: 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/sounds/hit.ogg',
+        ambient: 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/sounds/ambience.mp3', // Заглушка
+        pickup: 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/sounds/bell.mp3', // Заглушка
+    };
+
+    // Ассеты
+    const ASSET_PATHS = {
+        humanModel: './human.glb', // Модель для игрока и врагов
+        gunModel: './gun.glb',     // Модель оружия
+    };
+    let isAssetsLoaded = false;
+
+    // UI Elements
+    const ui = {
+        mainMenu: document.getElementById('main-menu'),
+        pauseMenu: document.getElementById('pause-menu'),
+        optionsMenu: document.getElementById('options-menu'),
+        hud: document.getElementById('hud'),
+        healthBar: document.getElementById('health-bar'),
+        healthValue: document.getElementById('health-value'),
+        ammoDisplay: document.getElementById('ammo-display'),
+        weaponDisplay: document.getElementById('weapon-display'),
+        reloadIndicator: document.getElementById('reload-indicator'),
+        messageBox: document.getElementById('message-box'),
+    };
+
+    // ====================================================================
+    // 2. Инициализация Three.js и Настройки
+    // ====================================================================
+
+    function init() {
+        // --- Сцена и Рендерер ---
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0a0a0a); // Темный фон
+        scene.fog = new THREE.Fog(0x0a0a0a, 0.1, 50);
+
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.set(0, 1.7, 0); // Высота глаз игрока
+
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true; // Включаем тени
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.body.appendChild(renderer.domElement);
+
+        // --- Управление ---
+        controls = new THREE.PointerLockControls(camera, document.body);
+        
+        // --- Аудио ---
+        listener = new THREE.AudioListener();
+        camera.add(listener);
+        setupAudio();
+
+        // --- Обработчики событий ---
+        window.addEventListener('resize', onWindowResize);
+        document.addEventListener('keydown', onKeyDown);
+        document.addEventListener('keyup', onKeyUp);
+        document.addEventListener('click', onPlayerShoot);
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('keypress', onKeyPress);
+        
+        // Переход в Главное меню после инициализации
+        changeState(GAME_STATE.MENU);
+
+        // --- Настройки графики и постэффектов ---
+        setupComposer();
+        applyGraphicsSettings(settings.graphicsQuality);
+    }
+
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        composer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    // ====================================================================
+    // 3. UI и Управление Состоянием
+    // ====================================================================
+
+    function setupUI() {
+        document.getElementById('btn-start').onclick = () => startGame();
+        document.getElementById('btn-resume').onclick = () => resumeGame();
+        document.getElementById('btn-options-main').onclick = () => showOptions(GAME_STATE.MENU);
+        document.getElementById('btn-options-pause').onclick = () => showOptions(GAME_STATE.PAUSED);
+        document.getElementById('btn-exit-to-main').onclick = () => exitToMainMenu();
+        document.getElementById('btn-back-options').onclick = () => {
+            const previousState = ui.optionsMenu.dataset.previousState;
+            changeState(previousState ? previousState : GAME_STATE.MENU);
+        };
+
+        // Настройки
+        const sensSlider = document.getElementById('mouse-sensitivity');
+        const sensValueSpan = document.getElementById('mouse-sensitivity-value');
+        sensSlider.oninput = () => {
+            settings.mouseSensitivity = parseFloat(sensSlider.value);
+            sensValueSpan.textContent = settings.mouseSensitivity.toFixed(2);
+            // Three.js controls will automatically update when the pointer is locked
+        };
+        sensValueSpan.textContent = settings.mouseSensitivity.toFixed(2);
+
+        const volumeSlider = document.getElementById('volume-slider');
+        const volumeValueSpan = document.getElementById('volume-slider-value');
+        volumeSlider.oninput = () => {
+            settings.volume = parseFloat(volumeSlider.value);
+            volumeValueSpan.textContent = `${Math.round(settings.volume * 100)}%`;
+            listener.setMasterVolume(settings.volume);
+        };
+        volumeValueSpan.textContent = `${Math.round(settings.volume * 100)}%`;
+        listener.setMasterVolume(settings.volume);
+
+        const graphicsSelect = document.getElementById('graphics-quality');
+        graphicsSelect.value = settings.graphicsQuality;
+        graphicsSelect.onchange = (e) => {
+            settings.graphicsQuality = e.target.value;
+            applyGraphicsSettings(settings.graphicsQuality);
+        };
+    }
+
+    function changeState(newState) {
+        currentState = newState;
+
+        // Скрываем все UI
+        Object.values(ui).forEach(el => el.classList.add('hidden'));
+        ui.optionsMenu.classList.add('hidden'); // Убираем явно, т.к. он не в списке ui
+
+        // Освобождаем или фиксируем указатель
+        if (newState === GAME_STATE.PLAYING) {
+            controls.lock();
+            ui.hud.classList.remove('hidden');
+        } else {
+            controls.unlock();
+            if (newState === GAME_STATE.MENU) {
+                ui.mainMenu.classList.remove('hidden');
+            } else if (newState === GAME_STATE.PAUSED) {
+                ui.pauseMenu.classList.remove('hidden');
+            } else if (newState === GAME_STATE.OPTIONS) {
+                ui.optionsMenu.classList.remove('hidden');
+            }
+        }
+    }
+
+    function showOptions(previousState) {
+        ui.optionsMenu.dataset.previousState = previousState;
+        changeState(GAME_STATE.OPTIONS);
+    }
+
+    function startGame() {
+        resetGame(); // Сброс состояния игры
+        setupLevel(); // Создание уровня
+        changeState(GAME_STATE.PLAYING);
+    }
+
+    function resumeGame() {
+        changeState(GAME_STATE.PLAYING);
+    }
+
+    function exitToMainMenu() {
+        // Удаление врагов и уровня
+        enemies.forEach(e => {
+            if (e.mesh) scene.remove(e.mesh);
+        });
+        enemies = [];
+        player.collisionChecks = [];
+
+        // Удаление геометрии уровня (если нужна чистка)
+        // В этой простой реализации можно не чистить, т.к. новый уровень будет создан поверх,
+        // но в большом проекте тут нужна полная очистка scene.children
+
+        changeState(GAME_STATE.MENU);
+    }
+
+    function resetGame() {
+        player.health = player.maxHealth;
+        player.damageTakenTime = 0;
+        ammo.currentMag = WEAPON_CONFIG.MAG_SIZE;
+        ammo.totalReserve = WEAPON_CONFIG.MAX_AMMO - WEAPON_CONFIG.MAG_SIZE;
+        ammo.isReloading = false;
+        player.velocity.set(0, 0, 0);
+        updateHUD();
+        // Перемещение игрока на стартовую позицию
+        camera.position.set(0, 1.7, 0);
+    }
+
+    function updateHUD() {
+        ui.healthBar.style.width = `${player.health}%`;
+        ui.healthValue.textContent = Math.ceil(player.health);
+        
+        let healthColor;
+        if (player.health > 70) healthColor = 'bg-green-600';
+        else if (player.health > 30) healthColor = 'bg-yellow-600';
+        else healthColor = 'bg-red-600';
+
+        ui.healthBar.className = `h-full ${healthColor} rounded-full transition-all duration-300`;
+
+        ui.ammoDisplay.textContent = `${ammo.currentMag} / ${ammo.totalReserve}`;
+        ui.reloadIndicator.classList.toggle('hidden', !ammo.isReloading);
+        ui.weaponDisplay.textContent = 'ПЛАЗМОПУШКА'; // TODO: динамическое отображение
+    }
+
+    function showMessage(text) {
+        ui.messageBox.textContent = text;
+        ui.messageBox.classList.remove('hidden');
+        setTimeout(() => {
+            ui.messageBox.classList.add('hidden');
+        }, 1500);
+    }
+
+    // ====================================================================
+    // 4. Загрузка Ассетов (GLB)
+    // ====================================================================
+
+    function loadAssets() {
+        const loadingManager = new THREE.LoadingManager();
+        const loader = new THREE.GLTFLoader(loadingManager);
+
+        const assetPromises = [];
+
+        // 1. Загрузка модели человека/врага
+        assetPromises.push(new Promise((resolve, reject) => {
+            loader.load(ASSET_PATHS.humanModel, (gltf) => {
+                enemyTemplate = gltf.scene;
+                // Настройка для теней и оптимизации
+                enemyTemplate.traverse((child) => {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                    }
+                });
+                console.log('human.glb загружен успешно.');
+                resolve();
+            }, undefined, (error) => {
+                console.error('Ошибка загрузки human.glb. Используется плейсхолдер.', error);
+                resolve(); // Разрешаем, чтобы игра продолжилась с плейсхолдерами
+            });
+        }));
+
+        // 2. Загрузка модели оружия
+        assetPromises.push(new Promise((resolve, reject) => {
+            loader.load(ASSET_PATHS.gunModel, (gltf) => {
+                playerGunModel = gltf.scene;
+                playerGunModel.traverse((child) => {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                    }
+                });
+                console.log('gun.glb загружен успешно.');
+                resolve();
+            }, undefined, (error) => {
+                console.error('Ошибка загрузки gun.glb. Используется плейсхолдер.', error);
+                resolve(); // Разрешаем, чтобы игра продолжилась с плейсхолдерами
+            });
+        }));
+
+        // Ожидание загрузки всех ассетов
+        Promise.all(assetPromises).then(() => {
+            isAssetsLoaded = true;
+            console.log('Все ассеты загружены или заменены плейсхолдерами.');
+            if (currentState === GAME_STATE.LOADING) {
+                // Если мы все еще в состоянии загрузки, переходим в меню
+                changeState(GAME_STATE.MENU);
+            }
+        });
+    }
+
+    // ====================================================================
+    // 5. Уровень и Геометрия (Простая статическая сцена-подвал)
+    // ====================================================================
+
+    function setupLevel() {
+        // Очистка предыдущей геометрии
+        scene.children = scene.children.filter(child => child.isCamera || child.isLight || child.isAudioListener);
+        player.collisionChecks = [];
+
+        // --- Свет ---
+        // 1. Мощный амбиентный свет (для видимости)
+        const ambientLight = new THREE.AmbientLight(0x404040, 1);
+        scene.add(ambientLight);
+
+        // 2. Динамический точечный свет (игрок - для фонарика/оружия)
+        const playerLight = new THREE.PointLight(0xffaa00, 50, 10, 2);
+        playerLight.castShadow = true;
+        playerLight.shadow.mapSize.width = 1024;
+        playerLight.shadow.mapSize.height = 1024;
+        playerLight.shadow.camera.near = 0.5;
+        playerLight.shadow.camera.far = 10;
+        camera.add(playerLight); // Свет прикреплен к камере
+        scene.add(camera);
+
+        // 3. Динамический мерцающий свет (для атмосферы)
+        const flickeringLight = new THREE.PointLight(0xff0000, 10, 15);
+        flickeringLight.position.set(10, 3, -10);
+        flickeringLight.castShadow = true;
+        scene.add(flickeringLight);
+        flickeringLight.userData.isFlickering = true;
+
+        // --- Простой уровень (Коридоры и комнаты) ---
+        const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.8, metalness: 0.2 });
+        const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.9, metalness: 0.1 });
+        
+        // Функция для создания стены/пола с коллизией
+        const createBox = (w, h, d, x, y, z, material, name) => {
+            const geometry = new THREE.BoxGeometry(w, h, d);
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(x, y + h / 2, z);
+            mesh.receiveShadow = true;
+            mesh.castShadow = true;
+            mesh.name = name;
+            scene.add(mesh);
+            player.collisionChecks.push(mesh);
+            return mesh;
+        };
+
+        // Пол (основа)
+        createBox(50, 0.2, 50, 0, 0, 0, floorMaterial, 'Floor');
+
+        // Коридор 1 (Start 0,0,0) -> (-10, 0, 0)
+        createBox(0.2, 5, 10, -5, 0, 5, wallMaterial, 'Wall_1_L');
+        createBox(0.2, 5, 10, 5, 0, 5, wallMaterial, 'Wall_1_R');
+        createBox(10, 5, 0.2, 0, 0, 10, wallMaterial, 'Wall_1_End');
+
+        // Комната 1 (10x10) - (10, 0, 0)
+        createBox(10, 5, 0.2, 10, 0, -5, wallMaterial, 'Room_1_Back');
+        createBox(0.2, 5, 10, 15, 0, 0, wallMaterial, 'Room_1_R');
+        createBox(0.2, 5, 10, 5, 0, 0, wallMaterial, 'Room_1_L');
+
+        // Коридор 2 -> (20, 0, 0)
+        createBox(10, 5, 0.2, 20, 0, 5, wallMaterial, 'Corridor_2_Wall_T');
+        createBox(10, 5, 0.2, 20, 0, -5, wallMaterial, 'Corridor_2_Wall_B');
+        
+        // Объект, который можно подобрать (Патроны)
+        const ammoGeometry = new THREE.CylinderGeometry(0.2, 0.2, 0.6, 16);
+        const ammoMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        const ammoPickup = new THREE.Mesh(ammoGeometry, ammoMaterial);
+        ammoPickup.position.set(10, 1.2, 3);
+        ammoPickup.name = 'AmmoPickup';
+        ammoPickup.userData.type = 'Ammo';
+        ammoPickup.castShadow = true;
+        scene.add(ammoPickup);
+        player.collisionChecks.push(ammoPickup); // Добавляем в список для проверки подбора
+        
+        // --- Размещение врагов ---
+        spawnEnemy(new THREE.Vector3(12, 1.7, 0));
+        spawnEnemy(new THREE.Vector3(20, 1.7, 0));
+
+        // --- Настройка модели оружия игрока ---
+        setupPlayerWeapon();
+    }
+
+    // ====================================================================
+    // 6. Управление Игроком (WASD, Прыжки, Коллизии)
+    // ====================================================================
+
+    function onKeyDown(event) {
+        if (currentState !== GAME_STATE.PLAYING) return;
+
+        switch (event.code) {
+            case 'KeyW': moveForward = true; break;
+            case 'KeyS': moveBackward = true; break;
+            case 'KeyA': moveLeft = true; break;
+            case 'KeyD': moveRight = true; break;
+            case 'Space':
+                if (player.canJump === true) player.velocity.y += 10;
+                player.canJump = false;
+                break;
+            case 'KeyR':
+                startReload();
+                break;
+            case 'Escape':
+                pauseGame();
+                break;
+        }
+    }
+
+    function onKeyUp(event) {
+        if (currentState !== GAME_STATE.PLAYING) return;
+
+        switch (event.code) {
+            case 'KeyW': moveForward = false; break;
+            case 'KeyS': moveBackward = false; break;
+            case 'KeyA': moveLeft = false; break;
+            case 'KeyD': moveRight = false; break;
+        }
+    }
+
+    function onKeyPress(event) {
+        if (currentState !== GAME_STATE.PLAYING) return;
+
+        // E - подбор предметов
+        if (event.code === 'KeyE') {
+            checkItemPickup();
+        }
+    }
+
+    function onMouseMove(event) {
+        if (currentState === GAME_STATE.PLAYING) {
+            // Three.js PointerLockControls автоматически обрабатывает движения,
+            // но мы можем настроить чувствительность.
+            controls.mouseSpeed = settings.mouseSensitivity;
+        }
+    }
+
+    function pauseGame() {
+        if (currentState === GAME_STATE.PLAYING) {
+            changeState(GAME_STATE.PAUSED);
+        }
+    }
+
+    function updatePlayerMovement(deltaTime) {
+        const delta = deltaTime;
+        player.velocity.x -= player.velocity.x * 10.0 * delta;
+        player.velocity.z -= player.velocity.z * 10.0 * delta;
+        player.velocity.y -= 9.8 * 10.0 * delta; // Гравитация (9.8 м/с^2 * 10.0 для масштаба)
+
+        player.direction.z = Number(moveForward) - Number(moveBackward);
+        player.direction.x = Number(moveRight) - Number(moveLeft);
+        player.direction.normalize(); // Нормализация для предотвращения ускорения по диагонали
+
+        if (moveForward || moveBackward) player.velocity.z -= player.direction.z * player.moveSpeed * delta * 100.0;
+        if (moveLeft || moveRight) player.velocity.x -= player.direction.x * player.moveSpeed * delta * 100.0;
+        
+        // Применяем скорость к контроллеру
+        controls.moveRight(-player.velocity.x * delta);
+        controls.moveForward(-player.velocity.z * delta);
+        camera.position.y += player.velocity.y * delta; // Применяем гравитацию
+
+        // Проверка коллизии с полом
+        if (camera.position.y < 1.7) {
+            player.velocity.y = 0;
+            camera.position.y = 1.7;
+            player.canJump = true;
+        }
+
+        // Простая коллизия со стенами
+        // TODO: Реализовать Raycasting для точной коллизии
+    }
+
+    function updateHealthRegen(deltaTime) {
+        if (player.health < player.maxHealth && (Date.now() - player.damageTakenTime > 5000)) {
+            player.health = Math.min(player.maxHealth, player.health + 1 * deltaTime); // 1 HP в секунду
+            updateHUD();
+        }
+    }
+
+    function takeDamage(amount) {
+        if (player.health <= 0) return;
+
+        player.health = Math.max(0, player.health - amount);
+        player.damageTakenTime = Date.now();
+        updateHUD();
+
+        if (player.health <= 0) {
+            // TODO: Реализовать смерть
+            console.log('Игрок погиб!');
+            exitToMainMenu();
+        }
+    }
+
+    // ====================================================================
+    // 7. Оружие и Стрельба
+    // ====================================================================
+
+    function setupPlayerWeapon() {
+        // Удаляем старую модель, если есть
+        if (playerGun) scene.remove(playerGun);
+        
+        if (playerGunModel) {
+            playerGun = playerGunModel.clone();
+        } else {
+            // Плейсхолдер для оружия
+            const gunGeometry = new THREE.BoxGeometry(0.1, 0.1, 0.5);
+            const gunMaterial = new THREE.MeshStandardMaterial({ color: 0x666666, metalness: 0.9 });
+            playerGun = new THREE.Mesh(gunGeometry, gunMaterial);
+        }
+
+        // Позиционируем оружие перед камерой
+        playerGun.position.set(0.5, -0.4, -0.7);
+        playerGun.rotation.set(0, Math.PI, 0);
+        playerGun.scale.set(0.5, 0.5, 0.5);
+
+        // Внимание: важно, чтобы модель оружия не отбрасывала тени на камеру.
+        playerGun.castShadow = true;
+        playerGun.receiveShadow = false; 
+
+        camera.add(playerGun);
+    }
+
+    function onPlayerShoot(event) {
+        if (currentState !== GAME_STATE.PLAYING || ammo.isReloading || controls.isLocked === false) return;
+
+        const now = clock.getElapsedTime();
+        if (now - ammo.lastShotTime < WEAPON_CONFIG.FIRE_RATE) return;
+
+        if (ammo.currentMag > 0) {
+            ammo.currentMag--;
+            ammo.lastShotTime = now;
+            updateHUD();
+
+            shootSound.play();
+            // TODO: Добавить тряску камеры, вспышку и анимацию рук
+
+            // --- Raycasting для попадания ---
+            const raycaster = new THREE.Raycaster();
+            const center = new THREE.Vector2(0, 0); // Центр экрана
+            raycaster.setFromCamera(center, camera);
+
+            // Исключаем оружие игрока из целей (чтобы не стрелять в себя)
+            const shootableObjects = enemies.map(e => e.mesh).filter(m => m !== null);
+            shootableObjects.push(...player.collisionChecks.filter(obj => obj.userData.type !== 'Ammo')); // Стены, объекты
+
+            const intersects = raycaster.intersectObjects(shootableObjects, true);
+
+            if (intersects.length > 0) {
+                const hitObject = intersects[0].object;
+                const distance = intersects[0].distance;
+                console.log('Попадание по:', hitObject.name, 'на расстоянии:', distance.toFixed(2));
+
+                // Проверка, попали ли мы во врага
+                const hitEnemy = enemies.find(e => e.mesh === hitObject || (hitObject.parent && hitObject.parent.parent === e.mesh));
+
+                if (hitEnemy) {
+                    hitEnemy.takeDamage(25); // Базовый урон
+                }
+                
+                // TODO: Декали выстрелов, эффекты попадания
+            }
+        } else {
+            // Нет патронов, начинаем перезарядку
+            if (ammo.totalReserve > 0 && !ammo.isReloading) {
+                startReload();
+            } else {
+                // TODO: Звук "клик"
+            }
+        }
+    }
+
+    function startReload() {
+        if (ammo.isReloading || ammo.totalReserve === 0 || ammo.currentMag === WEAPON_CONFIG.MAG_SIZE) return;
+
+        ammo.isReloading = true;
+        updateHUD();
+
+        setTimeout(() => {
+            const needed = WEAPON_CONFIG.MAG_SIZE - ammo.currentMag;
+            const transfer = Math.min(needed, ammo.totalReserve);
+            
+            ammo.currentMag += transfer;
+            ammo.totalReserve -= transfer;
+            ammo.isReloading = false;
+            updateHUD();
+            // TODO: Звук перезарядки, анимация
+        }, WEAPON_CONFIG.RELOAD_TIME * 1000);
+    }
+
+    function checkItemPickup() {
+        // Raycasting от игрока вниз/вперед для проверки подбора
+        const raycaster = new THREE.Raycaster();
+        raycaster.set(camera.position, new THREE.Vector3(0, -1, 0)); // Проверка вниз
+        
+        const pickupDistance = 2; // Максимальная дистанция подбора
+        const intersects = raycaster.intersectObjects(player.collisionChecks, false);
+
+        for (let i = 0; i < intersects.length; i++) {
+            const mesh = intersects[i].object;
+            if (intersects[i].distance < pickupDistance && mesh.userData.type === 'Ammo') {
+                ammo.totalReserve = Math.min(WEAPON_CONFIG.MAX_AMMO, ammo.totalReserve + WEAPON_CONFIG.PICKUP_AMMO);
+                showMessage(`Подобрано ${WEAPON_CONFIG.PICKUP_AMMO} Патронов!`);
+                
+                // Удаление объекта с патронами
+                scene.remove(mesh);
+                player.collisionChecks = player.collisionChecks.filter(item => item !== mesh);
+                updateHUD();
+                return;
+            }
+        }
+        
+        // Проверка сообщения о подборе (E) - упрощенная версия
+        // В более сложной игре нужен триггер
+    }
+
+    // ====================================================================
+    // 8. ИИ Врагов
+    // ====================================================================
+
+    class Enemy {
+        constructor(position, index) {
+            this.name = `Enemy_${index}`;
+            this.health = 100;
+            this.speed = 2.0;
+            this.state = 'PATROL'; // PATROL, CHASE, ATTACK, SEARCH
+            this.target = camera.position;
+            this.lastSeenTarget = null;
+            this.detectionRange = 20;
+            this.attackRange = 5;
+            this.fireCooldown = 2.0;
+            this.lastFireTime = 0;
+            this.isAlive = true;
+            this.gunMesh = null; // Оружие в руке
+            
+            // --- Создание Меша ---
+            if (enemyTemplate) {
+                this.mesh = enemyTemplate.clone();
+            } else {
+                // Плейсхолдер (Красный Куб)
+                const geometry = new THREE.BoxGeometry(1, 1.7, 0.5);
+                const material = new THREE.MeshStandardMaterial({ color: 0xff0000, metalness: 0.1 });
+                this.mesh = new THREE.Mesh(geometry, material);
+            }
+            this.mesh.position.copy(position);
+            this.mesh.castShadow = true;
+            this.mesh.name = this.name;
+            scene.add(this.mesh);
+            
+            // --- Оружие врага ---
+            if (playerGunModel) {
+                 this.gunMesh = playerGunModel.clone();
+            } else {
+                const gunGeometry = new THREE.BoxGeometry(0.05, 0.05, 0.3);
+                const gunMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
+                this.gunMesh = new THREE.Mesh(gunGeometry, gunMaterial);
+            }
+            // Прикрепляем к мешу врага (упрощенно)
+            this.gunMesh.position.set(0.5, 0.5, 0); // Положение в руке
+            this.gunMesh.rotation.set(0, Math.PI/2, 0);
+            this.mesh.add(this.gunMesh);
+        }
+
+        takeDamage(amount) {
+            if (!this.isAlive) return;
+            this.health = Math.max(0, this.health - amount);
+            
+            if (this.health <= 0) {
+                this.die();
+            } else {
+                // Всегда переходим в состояние преследования после получения урона
+                this.state = 'CHASE';
+            }
+        }
+        
+        die() {
+            this.isAlive = false;
+            console.log(`${this.name} уничтожен.`);
+            
+            // --- Ragdoll / Анимация смерти ---
+            // В простой реализации просто падаем
+            scene.remove(this.gunMesh);
+            this.mesh.rotation.x = Math.PI / 2; // Падает
+            this.mesh.material.color.set(0x330000); // Темнеет
+
+            // Удаляем через 5 секунд
+            setTimeout(() => {
+                scene.remove(this.mesh);
+                enemies = enemies.filter(e => e !== this);
+                // Повторный спавн через некоторое время
+                setTimeout(() => spawnEnemy(new THREE.Vector3(10 * (Math.random() - 0.5), 1.7, 10 * (Math.random() - 0.5))), 5000);
+            }, 5000);
+        }
+
+        // Проверка прямой видимости до игрока (Line of Sight - LOS)
+        checkLOS() {
+            const raycaster = new THREE.Raycaster(this.mesh.position, new THREE.Vector3().subVectors(this.target, this.mesh.position).normalize());
+            raycaster.far = this.detectionRange;
+            
+            // Исключаем самого врага и его оружие
+            const obstacles = player.collisionChecks.filter(mesh => mesh.name !== 'AmmoPickup');
+            const intersects = raycaster.intersectObjects(obstacles, true);
+
+            // Если есть пересечения, и первое пересечение не является игроком (или его мешем)
+            if (intersects.length > 0) {
+                const intersectionPoint = intersects[0].point;
+                const distanceToIntersection = this.mesh.position.distanceTo(intersectionPoint);
+                const distanceToPlayer = this.mesh.position.distanceTo(this.target);
+                
+                // Если преграда ближе, чем игрок, то LOS потерян
+                return distanceToIntersection > distanceToPlayer; // False, если преграда ближе
+            }
+
+            return true; // Нет преград, LOS чист
+        }
+
+        update(deltaTime) {
+            if (!this.isAlive) return;
+
+            const distanceToPlayer = this.mesh.position.distanceTo(this.target);
+            const playerInLOS = this.checkLOS();
+
+            // --- Изменение состояния ---
+            if (distanceToPlayer <= this.detectionRange && playerInLOS) {
+                // Если игрок в пределах видимости
+                this.state = (distanceToPlayer <= this.attackRange) ? 'ATTACK' : 'CHASE';
+                this.lastSeenTarget = this.target.clone();
+            } else if (this.state === 'CHASE' || this.state === 'ATTACK') {
+                // Потерял игрока, переходит в поиск
+                this.state = 'SEARCH';
+            } else if (this.state === 'SEARCH' && this.lastSeenTarget && this.mesh.position.distanceTo(this.lastSeenTarget) < 1) {
+                // Дошел до последней видимой точки и потерял его
+                this.state = 'PATROL';
+                this.lastSeenTarget = null;
+            }
+
+            // --- Поведение ---
+            if (this.state === 'CHASE' || this.state === 'SEARCH') {
+                const destination = (this.state === 'CHASE') ? this.target : this.lastSeenTarget;
+                if (destination) {
+                    const direction = new THREE.Vector3().subVectors(destination, this.mesh.position).normalize();
+                    this.mesh.position.addScaledVector(direction, this.speed * deltaTime);
+
+                    // Вращение в сторону движения (упрощенно)
+                    this.mesh.lookAt(destination.x, this.mesh.position.y, destination.z);
+                }
+            } else if (this.state === 'ATTACK') {
+                // Стоит на месте и стреляет
+                this.mesh.lookAt(this.target.x, this.mesh.position.y, this.target.z);
+                this.fireWeapon();
+            }
+            // PATROL: упрощенно, пока не реализовано патрулирование по точкам
+        }
+        
+        fireWeapon() {
+            const now = clock.getElapsedTime();
+            if (now - this.lastFireTime < this.fireCooldown) return;
+
+            this.lastFireTime = now;
+            // TODO: Звук выстрела врага, эффект
+
+            // --- Raycasting врага по игроку ---
+            const raycaster = new THREE.Raycaster();
+            const direction = new THREE.Vector3().subVectors(this.target, this.gunMesh.getWorldPosition(new THREE.Vector3())).normalize();
+            raycaster.set(this.gunMesh.getWorldPosition(new THREE.Vector3()), direction);
+
+            // Цели: игрок (простая проверка по сфере вокруг камеры)
+            const targetSphere = new THREE.Sphere(this.target, 0.5); 
+            const distance = raycaster.ray.distanceToPoint(this.target);
+
+            if (distance < 0.5) { // Если луч попадает в сферу игрока
+                takeDamage(10); // Урон от врага
+                console.log('Враг попал!');
+            }
+        }
+    }
+
+    function spawnEnemy(position) {
+        const newEnemy = new Enemy(position, enemies.length);
+        enemies.push(newEnemy);
+    }
+
+
+    // ====================================================================
+    // 9. Аудио Система
+    // ====================================================================
+
+    function setupAudio() {
+        // --- Звуки игрока ---
+        footstepSound = new THREE.Audio(listener);
+        const footstepLoader = new THREE.AudioLoader();
+        footstepLoader.load(soundUrls.footstep, (buffer) => {
+            footstepSound.setBuffer(buffer);
+            footstepSound.setLoop(false);
+            footstepSound.setVolume(settings.volume);
+        }, undefined, (e) => console.error('Ошибка загрузки footstep sound:', e));
+        
+        shootSound = new THREE.Audio(listener);
+        const shootLoader = new THREE.AudioLoader();
+        shootLoader.load(soundUrls.shoot, (buffer) => {
+            shootSound.setBuffer(buffer);
+            shootSound.setLoop(false);
+            shootSound.setVolume(settings.volume * 2); // Громче
+        }, undefined, (e) => console.error('Ошибка загрузки shoot sound:', e));
+        
+        // --- Фоновый звук (Ambient) ---
+        const ambientSound = new THREE.Audio(listener);
+        const ambientLoader = new THREE.AudioLoader();
+        ambientLoader.load(soundUrls.ambient, (buffer) => {
+            ambientSound.setBuffer(buffer);
+            ambientSound.setLoop(true);
+            ambientSound.setVolume(settings.volume * 0.2); // Тихий
+            ambientSound.play();
+        }, undefined, (e) => console.error('Ошибка загрузки ambient sound:', e));
+    }
+
+    // ====================================================================
+    // 10. Постэффекты и Настройки Графики
+    // ====================================================================
+    
+    let renderPass, bloomPass;
+    
+    function setupComposer() {
+        composer = new THREE.EffectComposer(renderer);
+        renderPass = new THREE.RenderPass(scene, camera);
+        composer.addPass(renderPass);
+
+        // Bloom Pass (Unreal Bloom)
+        bloomPass = new THREE.UnrealBloomPass(
+            new THREE.Vector2(window.innerWidth, window.innerHeight),
+            1.5, // strength
+            0.4, // radius
+            0.85 // threshold
+        );
+        bloomPass.renderToScreen = true; // Убедитесь, что это последний проход
+        // Добавляем, но включаем/выключаем в зависимости от настроек
+        composer.addPass(bloomPass);
+    }
+    
+    function applyGraphicsSettings(quality) {
+        // Установка качества рендеринга
+        const isHigh = quality === 'High';
+        const isLow = quality === 'Low';
+        
+        // Тени
+        renderer.shadowMap.enabled = !isLow;
+
+        // Постэффекты (Bloom)
+        if (bloomPass) {
+            bloomPass.enabled = isHigh;
+            // Установка bloomPass как последнего прохода, чтобы он рендерился на экран
+            composer.passes[composer.passes.length - 1] = bloomPass;
+        }
+        
+        // FPS (простое ограничение через интервал обновления, не точный ограничитель)
+        // Не будем устанавливать лимит FPS, т.к. requestAnimationFrame - стандарт
+    }
+
+    // ====================================================================
+    // 11. Основной Игровой Цикл
+    // ====================================================================
+
+    let lastTime = 0;
+    
+    function animate(currentTime) {
+        requestAnimationFrame(animate);
+
+        const deltaTime = (currentTime - lastTime) / 1000 || 0;
+        lastTime = currentTime;
+
+        if (currentState === GAME_STATE.PLAYING) {
+            const delta = clock.getDelta();
+
+            // 1. Обновление движения игрока
+            updatePlayerMovement(delta);
+            
+            // 2. Обновление ИИ врагов и логики
+            enemies.forEach(enemy => enemy.update(delta));
+            
+            // 3. Обновление регенерации здоровья
+            updateHealthRegen(delta);
+
+            // 4. Обновление мерцающего света (для атмосферы)
+            const flickeringLight = scene.getObjectByName('PointLight'); // Пример
+            if (flickeringLight && flickeringLight.userData.isFlickering) {
+                flickeringLight.intensity = 10 + Math.sin(clock.getElapsedTime() * 10) * 8; // Мерцание
+            }
+            
+            // 5. Рендеринг сцены
+            if (settings.graphicsQuality === 'Low') {
+                renderer.render(scene, camera);
+            } else {
+                composer.render();
+            }
+
+        } else if (currentState === GAME_STATE.PAUSED || currentState === GAME_STATE.OPTIONS) {
+            // В режиме паузы или меню настроек не обновляем логику, но показываем UI
+        } else if (currentState === GAME_STATE.MENU) {
+            // В меню можно добавить вращение логотипа или другие эффекты
+            renderer.render(scene, camera);
+        }
+    }
+    
+    // Инициализация игры
+    window.onload = () => {
+        init();
+        setupUI();
+        loadAssets(); // Запуск загрузки ассетов
+        animate(0);  // Запуск цикла
+    };
+
+</script>
+</body>
+</html>
