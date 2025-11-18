@@ -11,8 +11,23 @@ let settings = {
     userBio: ''
 };
 
-function parseMarkdownBold(text) {
+function escapeHTML(str) {
+    return str.replace(/[&<>"'\/]/g, function (c) {
+        return ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;',
+            '/': '&#47;'
+        })[c];
+    });
+}
+
+function parseMarkdownSafe(text) {
     if (!text) return "";
+
+    text = escapeHTML(text);
 
     return text
         .replace(/\*\*(.+?)\*\*/gs, '<strong>$1</strong>')
@@ -192,7 +207,7 @@ function renderMessages() {
             <img src="${msg.role === 'user' ? settings.userAvatar : 'icon.png'}" 
                  class="message-avatar" 
                  onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Ccircle cx=\'50\' cy=\'50\' r=\'50\' fill=\'%232ea67d\'/%3E%3Ctext x=\'50\' y=\'50\' font-size=\'40\' text-anchor=\'middle\' dy=\'.3em\' fill=\'white\' font-family=\'Arial\'%3E${msg.role === 'user' ? 'U' : 'F'}%3C/text%3E%3C/svg%3E'">
-            <div class="message-content">${parseMarkdownBold(msg.content)}</div>
+            <div class="message-content">${parseMarkdownSafe(msg.content)}</div>
         </div>
     `).join('');
     container.scrollTop = container.scrollHeight;
