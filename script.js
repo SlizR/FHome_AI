@@ -348,6 +348,65 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+function setupMobileUI() {
+    const chatHeader = document.getElementById('chatHeader');
+    if (!chatHeader) return;
+
+    if (!chatHeader.querySelector('.chat-title-mobile')) {
+        const titleEl = document.createElement('div');
+        titleEl.className = 'chat-title-mobile';
+        titleEl.textContent = chatHeader.textContent || 'New Chat';
+        const toggleBtn = chatHeader.querySelector('.toggle-sidebar-btn');
+        chatHeader.innerHTML = '';
+        if (toggleBtn) chatHeader.appendChild(toggleBtn);
+        chatHeader.appendChild(titleEl);
+    }
+
+    if (!chatHeader.querySelector('.header-settings-btn')) {
+        const origSettings = document.querySelector('.settings-btn');
+        if (origSettings) {
+            const clone = origSettings.cloneNode(true);
+            clone.classList.remove('settings-btn');
+            clone.classList.add('header-settings-btn');
+            clone.onclick = function(e) {
+                e.stopPropagation();
+                openSettings();
+            };
+            chatHeader.appendChild(clone);
+        }
+    }
+
+    if (!document.querySelector('.fab-new-chat')) {
+        const fab = document.createElement('button');
+        fab.className = 'fab-new-chat';
+        fab.title = 'New Chat';
+        fab.innerHTML = '+'; // icon
+        fab.onclick = function(e) {
+            e.stopPropagation();
+            createNewChat();
+        };
+        document.body.appendChild(fab);
+    }
+}
+
+function refreshMobileHeaderTitle() {
+    const chatHeader = document.getElementById('chatHeader');
+    const titleEl = chatHeader ? chatHeader.querySelector('.chat-title-mobile') : null;
+    const chat = chats.find(c => c.id === currentChatId);
+    if (titleEl) titleEl.textContent = chat ? chat.title : 'New Chat';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    setupMobileUI();
+    refreshMobileHeaderTitle();
+});
+
+const originalRenderMessages = renderMessages;
+renderMessages = function() {
+    originalRenderMessages();
+    refreshMobileHeaderTitle();
+};
+
 window.selectChat = selectChat;
 window.deleteChat = deleteChat;
 window.renameChat = renameChat;
