@@ -211,7 +211,6 @@ This project is licensed under the **Apache License 2.0**.
 
 * **Original author:** Sliz®
 * **First public version:** Created by Sliz®
-* **Editor / Modifier of this version:** Марк Вознюк
 
 Full license is available in the `LICENSE` file.
 
