@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FHome AI® - Education AI®</title>
     <link rel="icon" type="image/png" href="icon.png">
-  
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
 <meta name="description" content="AI for learning and the concept of AI work.">
 <meta name="keywords" content="AI,education, teachers, kids, school, Sliz, university, FHome, R, Registered Company, Company, Registered, OPC, Open, Source, Code, Open Source Code">
 <meta name="author" content="Sliz®">
@@ -41,8 +39,10 @@
                 <span class="brand">FHome AI®</span>
             </div>
             <button class="toggle-sidebar-btn" style="position:absolute; top:10px; right:10px;" onclick="toggleSidebar()">×</button>
+            
             <button class="new-chat-btn" onclick="createNewChat()">+ New Chat</button>
             <div class="chats-list" id="chatsList"></div>
+            
             <button class="settings-btn" onclick="openSettings()">
                 ⚙️ Settings
             </button>
@@ -50,9 +50,13 @@
 
         <div class="main-content">
             <div class="chat-header" id="chatHeader">
-            <button class="toggle-sidebar-btn" onclick="toggleSidebar()">☰</button>
-            New Chat
+                <button class="toggle-sidebar-btn" onclick="toggleSidebar()">☰</button>
+                
+                <span class="chat-title-mobile" id="chatTitleMobile">New Chat</span>
+                
+                <button class="header-settings-btn" onclick="openSettings()">⚙️</button>
             </div>
+            
             <div class="messages-container" id="messagesContainer">
                 <div class="empty-state">
                     <div class="empty-state-icon">⌘</div>
@@ -60,21 +64,26 @@
                     <div class="empty-state-text">Your intelligent assistant powered by advanced AI. Ask me anything and I'll help you find answers!</div>
                 </div>
             </div>
+            
             <div class="input-area">
                 <div class="input-wrapper">
                     <input type="text" class="message-input" id="messageInput" placeholder="Ask me anything..." onkeypress="handleKeyPress(event)">
                     <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
                 </div>
                 <div class="mode-selector">
-                     <button class="mode-btn" data-mode="mind">Mind</button>
-                     <button class="mode-btn" data-mode="dev">Dev</button>
-                     <button class="mode-btn" data-mode="teacher">Teacher</button>
-                     <button class="mode-btn" data-mode="short">Short</button>
+                    <button class="mode-btn" data-mode="mind">Mind</button>
+                    <button class="mode-btn" data-mode="dev">Dev</button>
+                    <button class="mode-btn" data-mode="teacher">Teacher</button>
+                    <button class="mode-btn" data-mode="short">Short</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <div id="tooltip" class="tooltip"></div>
+
+    <button class="fab-new-chat" onclick="createNewChat()">+</button>
+    
     <div class="modal" id="settingsModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -98,21 +107,22 @@
                 
                 <div class="setting-group">
                 <label class="setting-label">Your Age</label>
-               <input type="number" class="setting-input" id="userAgeInput" placeholder="Enter your age">
-               </div>
+                <input type="number" class="setting-input" id="userAgeInput" placeholder="Enter your age">
+                </div>
 
-               <div class="setting-group">
-               <label class="setting-label">Your Hobbies</label>
-               <input type="text" class="setting-input" id="userHobbyInput" placeholder="Your hobbies">
-               </div>
+                <div class="setting-group">
+                <label class="setting-label">Your Hobbies</label>
+                <input type="text" class="setting-input" id="userHobbyInput" placeholder="Your hobbies">
+                </div>
 
-               <div class="setting-group">
-               <label class="setting-label">About You</label>
-               <textarea class="setting-input" id="userBioInput" placeholder="Tell something about yourself"></textarea>
-               </div>
-               <div class="settings-footer">
-               <span>FHome AI® • v910.testf • © 2025 Sliz®</span>
-               </div>
+                <div class="setting-group">
+                <label class="setting-label">About You</label>
+                <textarea class="setting-input" id="userBioInput" placeholder="Tell something about yourself"></textarea>
+                </div>
+                
+                <div class="settings-footer">
+                <span>FHome AI® • v910.testf • © 2025 Sliz®</span>
+                </div>
             </div>
         </div>
     </div>
