@@ -751,6 +751,39 @@ document.getElementById('chatModal').addEventListener('click', (e) => {
     }
 });
 
+function addMiniNewChatButton() {
+    const chatHeader = document.getElementById('chatHeader');
+    if (!chatHeader) return;
+
+    if (document.querySelector('.header-new-chat-btn')) return;
+
+    const newChatBtn = document.createElement('button');
+    newChatBtn.className = 'header-new-chat-btn';
+    newChatBtn.title = 'New Chat';
+    newChatBtn.textContent = '+';
+    newChatBtn.style.marginRight = '8px';
+    newChatBtn.style.fontSize = '18px';
+    newChatBtn.style.padding = '4px 8px';
+    newChatBtn.style.cursor = 'pointer';
+
+    newChatBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        createNewChat();
+        renderChats();
+        renderMessages();
+        refreshMobileHeaderTitle();
+    });
+
+    const settingsBtn = chatHeader.querySelector('.header-settings-btn');
+    if (settingsBtn) {
+        chatHeader.insertBefore(newChatBtn, settingsBtn);
+    } else {
+        chatHeader.appendChild(newChatBtn);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', addMiniNewChatButton);
+
 window.selectChat = selectChat;
 window.deleteChat = deleteChat;
 window.renameChat = renameChat;
