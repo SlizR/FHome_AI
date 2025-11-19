@@ -151,6 +151,7 @@ body {
 }
 
 .settings-btn {
+    display: flex;
     padding: 15px 20px;
     background: rgba(255, 255, 255, 0.05);
     border: none;
@@ -159,7 +160,6 @@ body {
     cursor: pointer;
     font-size: 14px;
     transition: all 0.2s;
-    display: flex;
     align-items: center;
     gap: 10px;
 }
@@ -177,7 +177,7 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    background: transparent;
+    background: rgba(255, 255, 255, 0.03);
     overflow: hidden;
 }
 
@@ -373,8 +373,6 @@ body {
     justify-content: center;
     text-align: center;
     padding: 40px;
-    /* ИСПРАВЛЕНИЕ 2: Убираем фоновый цвет у empty-state, чтобы он не отделялся */
-    background: transparent; 
 }
 
 .empty-state-icon {
@@ -606,7 +604,6 @@ body {
         width: 100vw;
         flex: 1;
         overflow: hidden;
-        background: transparent;
     }
 
     .chat-header {
@@ -649,23 +646,18 @@ body {
         color: white;
         border: none;
         cursor: pointer;
-        font-size: 18px; 
-        padding: 0; 
-        font-weight: 400; 
-    }
-
-    .header-settings-btn span {
-        display: none;
+        font-size: 18px;
+        padding: 0;
+        font-weight: 400;
     }
 
     .messages-container {
         padding: 14px;
         gap: 12px;
-        height: calc(100vh - 62px);
+        height: calc(100vh - 62px - 140px);
         overflow-y: auto;
-        padding-bottom: 140px;
     }
-    
+
     .input-area {
         position: fixed;
         left: 0;
@@ -696,13 +688,13 @@ body {
 
     .mode-selector {
         display: flex;
-        gap: 8px; 
+        gap: 8px;
         justify-content: center;
         margin-top: 5px;
     }
 
     .mode-btn {
-        padding: 6px 10px; 
+        padding: 6px 10px;
         font-size: 13px;
         border-radius: 8px;
     }
@@ -758,10 +750,6 @@ body {
 @media (max-width: 360px) {
     .chat-header { padding: 10px 10px; }
     .fab-new-chat { right: 12px; bottom: 145px; width: 50px; height: 50px; font-size: 20px; }
-    
-    .messages-container {
-        padding-bottom: 130px; 
-    }
 }
 
 .code-block-container {
