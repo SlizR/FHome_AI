@@ -83,18 +83,18 @@
     <div id="tooltip" class="tooltip"></div>
 
     <div id="chatModal" class="modal">
-    <div class="modal-content chat-modal-content">
-        <div class="modal-header">
-            Chats
-            <button class="close-btn" onclick="closeChatModal()">✕</button>
-        </div>
-        
-        <button class="new-chat-btn" onclick="createNewChat()">+ New Chat</button>
-
-        <div id="chatModalList" class="chats-list">
+        <div class="modal-content chat-modal-content">
+            <div class="modal-header">
+                Chats
+                <button class="close-btn" onclick="closeChatModal()">✕</button>
             </div>
+            
+            <button class="new-chat-btn" onclick="createNewChat()">+ New Chat</button>
+
+            <div id="chatModalList" class="chats-list chats-list-scrollable">
+            </div>
+        </div>
     </div>
-</div>
     
     <div class="modal" id="settingsModal">
         <div class="modal-content">
