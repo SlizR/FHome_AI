@@ -847,12 +847,18 @@ body {
     display: block;
 }
 
-.header-new-chat-btn {
+.chat-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mini-new-chat-btn {
     display: none;
 }
 
 @media (max-width: 768px) {
-    .header-new-chat-btn {
+    .mini-new-chat-btn {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -864,16 +870,11 @@ body {
         border: none;
         cursor: pointer;
         font-size: 18px;
-        padding: 0;
         font-weight: 400;
-        margin-right: 8px;
+        padding: 0;
     }
 
-    .header-new-chat-btn span {
-        display: none;
-    }
-
-    .header-new-chat-btn:hover {
+    .mini-new-chat-btn:hover {
         background: rgba(255,255,255,0.12);
     }
 }
