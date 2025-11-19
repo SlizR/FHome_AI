@@ -677,11 +677,10 @@ const messageInput = document.getElementById('messageInput');
     
     syncModeUI();
     
-    const toggleSidebarBtn = document.querySelector('.toggle-sidebar-btn');
-    if (toggleSidebarBtn) {
-        toggleSidebarBtn.onclick = openChatManager;
-    }
-});
+    const toggleSidebarBtn = document.querySelector('.chat-header .toggle-sidebar-btn');
+        if (toggleSidebarBtn) {
+        toggleSidebarBtn.onclick = openChatModal;
+       }
 
 // ----------------- System Mobile -----------------
 
