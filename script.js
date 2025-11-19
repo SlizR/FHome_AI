@@ -630,12 +630,17 @@ document.addEventListener('DOMContentLoaded', () => {
         createNewChat();
     }
 
-    setupMobileUI();
-    refreshMobileHeaderTitle();
-    
-    window.addEventListener('resize', manageMobileSettingsButton);
-    
-    const messageInput = document.getElementById('messageInput');
+setupMobileUI();
+refreshMobileHeaderTitle();
+
+const mobileChatBtn = document.querySelector('.chat-header .toggle-sidebar-btn');
+if (mobileChatBtn) {
+    mobileChatBtn.addEventListener('click', openChatModal);
+}
+
+window.addEventListener('resize', manageMobileSettingsButton);
+
+const messageInput = document.getElementById('messageInput');
     if (messageInput) {
         messageInput.addEventListener('input', syncModeUI);
         messageInput.addEventListener('keydown', handleKeyPress);
