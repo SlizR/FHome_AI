@@ -196,6 +196,11 @@ body {
     z-index: 10;
 }
 
+.chat-header .chat-title-mobile {
+    display: none; 
+}
+
+
 .messages-container {
     flex: 1;
     overflow-y: auto;
@@ -276,7 +281,7 @@ body {
 }
 
 .input-area {
-    padding: 20px 30px;
+    padding: 15px 30px 20px;
     background: rgba(10, 77, 60, 0.5);
     backdrop-filter: blur(10px);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -290,6 +295,7 @@ body {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 16px;
     padding: 8px 15px;
+    margin-bottom: 10px;
 }
 
 .message-input {
@@ -329,6 +335,34 @@ body {
 .send-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+.mode-selector {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 5px;
+}
+
+.mode-btn {
+    background: rgba(255,255,255,0.1);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.mode-btn:hover:not(.active) {
+    background: rgba(255,255,255,0.2);
+}
+
+.mode-btn.active {
+    background: #2ea67d;
+    box-shadow: 0 0 10px rgba(46,166,125,0.7);
 }
 
 .empty-state {
@@ -499,7 +533,7 @@ body {
     text-align: center;
 }
 
-.mode-tooltip {
+.tooltip {
     position: absolute;
     padding: 6px 10px;
     background: rgba(0,0,0,0.8);
@@ -512,22 +546,6 @@ body {
     transition: opacity .2s;
 }
 
-.mode-btn {
-    background: rgba(255,255,255,0.1);
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.mode-btn.active {
-    background: #2ea67d;
-    box-shadow: 0 0 10px rgba(46,166,125,0.7);
-}
-
-/* --- Стили для скроллбара --- */
 ::-webkit-scrollbar {
     width: 8px;
 }
@@ -546,7 +564,6 @@ body {
 }
 
 @media (max-width: 768px) {
-    /* Основной макет */
     .container {
         flex-direction: column;
         height: 100vh;
@@ -600,7 +617,7 @@ body {
         top: 0;
         z-index: 20;
     }
-
+    
     .toggle-sidebar-btn {
         display: block;
         font-size: 22px;
@@ -608,6 +625,7 @@ body {
     }
 
     .chat-header .chat-title-mobile {
+        display: block; 
         flex: 1;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -629,12 +647,14 @@ body {
         border: none;
         cursor: pointer;
         font-size: 18px;
+        padding: 0;
+        font-weight: 400;
     }
 
     .messages-container {
         padding: 14px;
         gap: 12px;
-        height: calc(100vh - 58px - 72px);
+        height: calc(100vh - 62px - 140px);
         overflow-y: auto;
     }
 
@@ -653,6 +673,7 @@ body {
         background: rgba(255,255,255,0.06);
         padding: 6px 8px;
         border-radius: 999px;
+        margin-bottom: 10px;
     }
     
     .message-input {
@@ -665,11 +686,25 @@ body {
         border-radius: 50%;
     }
 
+    .mode-selector {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-top: 5px;
+    }
+
+    .mode-btn {
+        padding: 6px 10px;
+        font-size: 13px;
+        border-radius: 8px;
+    }
+
+
     .fab-new-chat {
         display: flex;
         position: fixed;
         right: 16px;
-        bottom: 86px;
+        bottom: 155px;
         z-index: 26;
         width: 56px;
         height: 56px;
@@ -714,7 +749,7 @@ body {
 
 @media (max-width: 360px) {
     .chat-header { padding: 10px 10px; }
-    .fab-new-chat { right: 12px; bottom: 80px; width: 50px; height: 50px; font-size: 20px; }
+    .fab-new-chat { right: 12px; bottom: 145px; width: 50px; height: 50px; font-size: 20px; }
 }
 
 .code-block-container {
