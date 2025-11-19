@@ -678,6 +678,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+function openChatModal() {
+    const modal = document.getElementById('chatModal');
+    modal.classList.add('active');
+
+    const modalList = document.getElementById('chatModalList');
+    modalList.innerHTML = chats.map(chat => `
+        <div class="chat-item ${chat.id === currentChatId ? 'active' : ''}" onclick="selectChat(${chat.id}); closeChatModal();">
+            <span class="chat-title">${chat.title}</span>
+            <div class="chat-actions">
+                <button class="chat-action-btn" onclick="renameChat(${chat.id}, event)">✏️</button>
+                <button class="chat-action-btn" onclick="deleteChat(${chat.id}, event)">🗑️</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function closeChatModal() {
+    const modal = document.getElementById('chatModal');
+    modal.classList.remove('active');
+}
+
 window.selectChat = selectChat;
 window.deleteChat = deleteChat;
 window.renameChat = renameChat;
