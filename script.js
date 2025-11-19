@@ -682,79 +682,47 @@ const messageInput = document.getElementById('messageInput');
         toggleSidebarBtn.onclick = openChatModal;
        }
 });
-// ----------------- System Mobile -----------------
-
-function openChatModal() {
-    const modal = document.getElementById('chatModal');
-    modal.classList.add('active');
-
+// SYSTEM M2
+function renderChatModalList() {
     const modalList = document.getElementById('chatModalList');
+    if (!modalList) return;
 
-    modalList.innerHTML = `
-        <div class="chat-item new-chat-item" onclick="createNewChat(); closeChatModal();">
-            <span>+ New chat</span>
-        </div>
-    ` + chats.map(chat => `
+    const chatItemsHTML = chats.map(chat => `
         <div class="chat-item ${chat.id === currentChatId ? 'active' : ''}" onclick="selectChat(${chat.id}); closeChatModal();">
             <span class="chat-title">${chat.title}</span>
-            <div class="chat-actions" style="opacity:1; pointer-events:auto;">
-                <button class="chat-action-btn" onclick="renameChat(${chat.id}, event)">✏️</button>
-                <button class="chat-action-btn" onclick="deleteChat(${chat.id}, event)">🗑️</button>
+            <div class="chat-actions visible" style="opacity:1; pointer-events:auto;">
+                <button class="chat-action-btn" title="Rename" onclick="renameChat(${chat.id}, event)">✏️</button>
+                <button class="chat-action-btn" title="Delete" onclick="deleteChat(${chat.id}, event)">🗑️</button>
             </div>
         </div>
     `).join('');
+
+    modalList.innerHTML = `
+        <div class="modal-list-header">
+            <button class="new-chat-btn" onclick="createNewChat(); closeChatModal();">+ New Chat</button>
+        </div>
+        <div class="chats-list-scrollable">${chatItemsHTML}</div>
+    `;
+    
+    refreshMobileHeaderTitle();
+}
+
+
+function openChatModal() {
+    const modal = document.getElementById('chatModal');
+    if (modal) modal.classList.add('active');
+    renderChatModalList();
 }
 
 function closeChatModal() {
     const modal = document.getElementById('chatModal');
-    modal.classList.remove('active');
-}
-
-document.addEventListener('click', e => {
-    const modal = document.getElementById('chatModal');
-    if (!modal) return;
-
-    if (modal.classList.contains('active') && !e.target.closest('.modal-content')) {
-        closeChatModal();
-    }
-});
-
-function renameChat(id, event) {
-    if (event) event.stopPropagation();
-    const chat = chats.find(c => c.id === id);
-    if (!chat) return;
-
-    const newTitle = prompt("Write a new chat name:", chat.title);
-    if (!newTitle || !newTitle.trim()) return;
-
-    chat.title = newTitle.trim();
-    saveToCookie();
-
-    renderChats();
-    renderChatManagerChats();
-}
-
-function deleteChat(id, event) {
-    if (event) event.stopPropagation();
-    if (!confirm("Delete this chat?")) return;
-
-    chats = chats.filter(c => c.id !== id);
-
-    if (currentChatId === id) {
-        currentChatId = chats.length ? chats[0].id : null;
-    }
-
-    saveToCookie();
-
-    renderChats();
-    renderChatManagerChats();
-    renderMessages();
+    if (modal) modal.classList.remove('active');
 }
 
 function createNewChat() {
     const chat = {
         id: Date.now(),
-        title: 'New chat',
+        title: 'New Chat',
         messages: [],
         createdAt: new Date().toISOString()
     };
@@ -763,10 +731,76 @@ function createNewChat() {
     saveToCookie();
     renderChats();
     renderMessages();
-    renderChatManagerChats();
+    renderChatModalList();
 }
 
-// ----------------- System Mobile -----------------
+function selectChat(chatId) {
+    currentChatId = chatId;
+    renderChats();
+    renderMessages();
+    renderChatModalList();
+    closeChatModal();
+    
+    const sidebar = document.querySelector('.sidebar');
+    if (sidebar && window.innerWidth <= 768) {
+        sidebar.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+function deleteChat(chatId, event) {
+    if (event) event.stopPropagation();
+    if (confirm('Delete this chat?')) {
+        chats = chats.filter(c => c.id !== chatId);
+        if (currentChatId === chatId) {
+            currentChatId = chats.length > 0 ? chats[0].id : null;
+        }
+        saveToCookie();
+        renderChats();
+        renderMessages();
+        renderChatModalList();
+    }
+}
+
+function renameChat(chatId, event) {
+    if (event) event.stopPropagation();
+    const chat = chats.find(c => c.id === chatId);
+    const newTitle = prompt('Enter new chat title:', chat.title);
+    if (newTitle && newTitle.trim()) {
+        chat.title = newTitle.trim();
+        saveToCookie();
+        renderChats();
+        renderMessages();
+        renderChatModalList();
+    }
+}
+
+document.addEventListener('click', e => {
+    const chatModal = document.getElementById('chatModal');
+    const settingsModal = document.getElementById('settingsModal');
+
+    if (chatModal && chatModal.classList.contains('active') && !e.target.closest('.modal-content')) {
+        closeChatModal();
+    }
+
+     if (settingsModal && settingsModal.classList.contains('active') && !e.target.closest('.modal-content')) {
+        closeSettings();
+    }
+
+    const sidebar = document.querySelector('.sidebar');
+    const toggleBtn = document.querySelector('.toggle-sidebar-btn');
+    
+    if (window.innerWidth <= 768 && sidebar && sidebar.classList.contains('active')) {
+        if (!sidebar.contains(e.target) && (!toggleBtn || !toggleBtn.contains(e.target))) {
+            sidebar.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
+    
+    if (document.getElementById('tooltip') && document.getElementById('tooltip').style.display === 'block') {
+        hideTooltip();
+    }
+});
 
 window.selectChat = selectChat;
 window.deleteChat = deleteChat;
@@ -778,5 +812,5 @@ window.closeSettings = closeSettings;
 window.toggleSidebar = toggleSidebar;
 window.copyCode = copyCode;
 window.createNewChat = createNewChat;
-window.openChatManager = openChatManager;
-window.closeChatManager = closeChatManager;
+window.openChatModal = openChatModal;
+window.closeChatModal = closeChatModal;
