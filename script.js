@@ -681,7 +681,7 @@ const messageInput = document.getElementById('messageInput');
         if (toggleSidebarBtn) {
         toggleSidebarBtn.onclick = openChatModal;
        }
-
+});
 // ----------------- System Mobile -----------------
 
 function openChatModal() {
