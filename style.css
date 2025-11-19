@@ -134,6 +134,10 @@ body {
     opacity: 1;
 }
 
+.modal .chat-actions.visible {
+    opacity: 1 !important;
+}
+
 .chat-action-btn {
     background: rgba(255, 255, 255, 0.1);
     border: none;
@@ -538,6 +542,87 @@ body {
     text-align: center;
 }
 
+#chatModal .modal-content {
+    padding: 20px;
+}
+
+#chatModal .modal-list-header {
+    margin-bottom: 15px;
+}
+
+#chatModal .new-chat-btn {
+    margin: 0;
+    width: 100%;
+}
+
+#chatModal .chats-list-scrollable {
+    max-height: 70vh;
+    overflow-y: auto;
+    padding: 0;
+}
+
+#chatModal .chat-item {
+    padding: 15px;
+    margin-bottom: 10px;
+}
+
+#chatModal .chat-item:hover {
+    transform: none;
+}
+
+.code-block-container {
+    position: relative;
+    margin: 15px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #f9f9f9;
+}
+
+.code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background-color: #eee;
+    border-bottom: 1px solid #ddd;
+    font-size: 12px;
+}
+
+.code-language {
+    font-weight: bold;
+    color: #555;
+    text-transform: uppercase;
+}
+
+.copy-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-size: 12px;
+}
+
+.copy-btn:hover {
+    background-color: #0056b3;
+}
+
+.code-block-container pre {
+    margin: 0;
+    padding: 10px 12px;
+    overflow-x: auto;
+    font-family: monospace;
+}
+
+.code-block-container code {
+    white-space: pre;
+    display: block;
+    color: #000;
+}
+
 .tooltip {
     position: absolute;
     padding: 6px 10px;
@@ -567,30 +652,6 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: rgba(46, 166, 125, 0.7);
 }
-
-.message.ai .message-content .code-block-container code {
-    color: #000;
-}
-
-.chat-modal-content .new-chat-btn {
-    margin: 0 0 20px 0;
-    width: 100%;
-}
-
-.chat-modal-content .chats-list {
-    max-height: 400px;
-    margin-bottom: 10px;
-    padding: 0 0 10px 0;
-}
-
-.chat-modal-content .chat-item {
-    padding: 15px;
-}
-
-.chat-modal-content .chat-item:hover {
-    transform: none;
-}
-
 
 @media (max-width: 768px) {
     .container {
@@ -692,7 +753,7 @@ body {
     .messages-container {
         padding: 14px;
         gap: 12px;
-        height: calc(100vh - 62px - 100px);
+        height: 100%; 
         overflow-y: auto;
         padding-bottom: 180px;
     }
@@ -740,24 +801,9 @@ body {
 
 
     .fab-new-chat {
-        display: flex;
-        position: fixed;
-        right: 16px;
-        bottom: 155px;
-        z-index: 26;
-        width: 56px;
-        height: 56px;
-        border-radius: 50%;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.35);
-        background: linear-gradient(135deg, #2ea67d, #34d399);
-        color: white;
-        font-size: 22px;
-        border: none;
-        cursor: pointer;
+        display: none !important;
     }
-
+    
     .message {
         max-width: 92%;
     }
@@ -788,61 +834,8 @@ body {
 
 @media (max-width: 360px) {
     .chat-header { padding: 10px 10px; }
-    .fab-new-chat { right: 12px; bottom: 145px; width: 50px; height: 50px; font-size: 20px; }
 
     .messages-container {
         padding-bottom: 130px;
     }
-}
-
-.code-block-container {
-    position: relative;
-    margin: 15px 0;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    overflow: hidden;
-    background-color: #f9f9f9;
-}
-
-.code-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 12px;
-    background-color: #eee;
-    border-bottom: 1px solid #ddd;
-    font-size: 12px;
-}
-
-.code-language {
-    font-weight: bold;
-    color: #555;
-    text-transform: uppercase;
-}
-
-.copy-btn {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 4px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    font-size: 12px;
-}
-
-.copy-btn:hover {
-    background-color: #0056b3;
-}
-
-.code-block-container pre {
-    margin: 0;
-    padding: 10px 12px;
-    overflow-x: auto;
-    font-family: monospace;
-}
-
-.code-block-container code {
-    white-space: pre;
-    display: block;
 }
