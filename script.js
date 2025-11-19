@@ -245,20 +245,23 @@ function renderMessages() {
     const container = document.getElementById('messagesContainer');
     if (!container) return;
     const chat = chats.find(c => c.id === currentChatId);
-    const chatHeader = document.getElementById('chatHeader');
+    const chatHeaderTitle = document.getElementById('chatHeader').querySelector('.chat-title-mobile') || document.getElementById('chatHeader');
     
     if (!chat || chat.messages.length === 0) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-state-icon">⌘</div>
-                <div class="empty-state-title">Welcome to FHome AI</div>
-                <div class="empty-state-text">Your intelligent assistant powered by advanced AI. Ask me anything and I'll help you find answers!</div>
-            </div>
-        `;
-        if (chatHeader) chatHeader.textContent = chat ? chat.title : 'New Chat';
+        if (!container.querySelector('.empty-state')) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">⌘</div>
+                    <div class="empty-state-title">Welcome to FHome AI</div>
+                    <div class="empty-state-text">Your intelligent assistant powered by advanced AI. Ask me anything and I'll help you find answers!</div>
+                </div>
+            `;
+        }
+        if (chatHeaderTitle) chatHeaderTitle.textContent = chat ? chat.title : 'New Chat';
         return;
     }
-    if (chatHeader) chatHeader.textContent = chat.title;
+    
+    if (chatHeaderTitle) chatHeaderTitle.textContent = chat.title;
     
     container.innerHTML = chat.messages.map(msg => `
         <div class="message ${msg.role}">
@@ -272,7 +275,7 @@ function renderMessages() {
 }
 
 const MODES = ['mind', 'dev', 'teacher', 'short'];
-let activeMode = null; 
+let activeMode = null;
 let tooltipTimeout;
 
 function syncModeUI() {
@@ -292,7 +295,7 @@ function setMode(mode) {
     const currentModeName = modeMatch ? modeMatch[1] : null;
 
     let newMode = null;
-    let cleanText = input.value.replace(/^\/\w+\s*/, "").trim(); 
+    let cleanText = input.value.replace(/^\/\w+\s*/, "").trim();
 
     if (currentModeName === mode) {
         newMode = null;
@@ -327,7 +330,7 @@ function prepareMessageForAI() {
     
     const uiMessage = cleanUserText || message;
     
-    const aiMessage = message; 
+    const aiMessage = message;
 
     return { uiMessage, aiMessage };
 }
@@ -493,9 +496,28 @@ function hideTooltip() {
     }
 }
 
+function manageMobileSettingsButton() {
+    const headerSettingsBtn = document.querySelector('.header-settings-btn');
+    if (!headerSettingsBtn) return;
+    
+    const textSpan = headerSettingsBtn.querySelector('span');
+    if (textSpan) {
+        if (window.innerWidth <= 768) {
+            textSpan.style.display = 'none';
+        } else {
+            textSpan.style.display = '';
+        }
+    }
+}
+
 function setupMobileUI() {
     const chatHeader = document.getElementById('chatHeader');
     if (!chatHeader) return;
+
+    const fabNewChat = document.querySelector('.fab-new-chat');
+    if (fabNewChat) {
+        fabNewChat.style.display = 'none';
+    }
 
     if (!chatHeader.querySelector('.chat-title-mobile')) {
         const titleEl = document.createElement('div');
@@ -513,11 +535,19 @@ function setupMobileUI() {
             const clone = origSettings.cloneNode(true);
             clone.classList.remove('settings-btn');
             clone.classList.add('header-settings-btn');
+            
             clone.onclick = function(e) {
                 e.stopPropagation();
                 openSettings();
             };
+            
+            if (!clone.querySelector('span')) {
+                const icon = clone.innerHTML;
+                clone.innerHTML = `${icon} <span>Settings</span>`;
+            }
+            
             chatHeader.appendChild(clone);
+            manageMobileSettingsButton();
         }
     }
 }
@@ -562,20 +592,22 @@ document.addEventListener('DOMContentLoaded', () => {
         createNewChat();
     }
 
-    setupMobileUI(); 
+    setupMobileUI();
     refreshMobileHeaderTitle();
+    
+    window.addEventListener('resize', manageMobileSettingsButton);
     
     const messageInput = document.getElementById('messageInput');
     if (messageInput) {
         messageInput.addEventListener('input', syncModeUI);
-        messageInput.addEventListener('keydown', handleKeyPress); 
+        messageInput.addEventListener('keydown', handleKeyPress);
     }
 
     document.querySelectorAll('.mode-btn').forEach(btn => {
         const mode = btn.dataset.mode;
         
         btn.addEventListener('click', () => {
-            setMode(mode); 
+            setMode(mode);
             
             if (window.innerWidth <= 768) {
                 hideTooltip();
@@ -588,7 +620,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (window.innerWidth > 768) {
                 tooltipTimeout = setTimeout(() => {
                     showTooltip(btn, getTooltipText(mode));
-                }, 1500); 
+                }, 1500);
             }
         });
         
