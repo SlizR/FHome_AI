@@ -656,6 +656,8 @@ body {
         font-size: 22px;
         margin-right: 8px;
         padding: 0;
+        position: relative;
+        z-index: 21;
     }
 
     .chat-header .chat-title-mobile {
