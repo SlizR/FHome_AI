@@ -177,6 +177,17 @@ function closeSettings() {
     if (modal) modal.classList.remove('active');
 }
 
+function openChatManager() {
+    const managerModal = document.getElementById('chatManagerModal');
+    if (managerModal) managerModal.classList.add('active');
+    renderChatManagerChats();
+}
+
+function closeChatManager() {
+    const managerModal = document.getElementById('chatManagerModal');
+    if (managerModal) managerModal.classList.remove('active');
+}
+
 function createNewChat() {
     const chat = {
         id: Date.now(),
@@ -189,12 +200,15 @@ function createNewChat() {
     saveToCookie();
     renderChats();
     renderMessages();
+    renderChatManagerChats();
 }
 
 function selectChat(chatId) {
     currentChatId = chatId;
     renderChats();
     renderMessages();
+    renderChatManagerChats();
+    closeChatManager();
     
     const sidebar = document.querySelector('.sidebar');
     if (sidebar && window.innerWidth <= 768) {
@@ -204,7 +218,7 @@ function selectChat(chatId) {
 }
 
 function deleteChat(chatId, event) {
-    event.stopPropagation();
+    if (event) event.stopPropagation();
     if (confirm('Delete this chat?')) {
         chats = chats.filter(c => c.id !== chatId);
         if (currentChatId === chatId) {
@@ -213,17 +227,20 @@ function deleteChat(chatId, event) {
         saveToCookie();
         renderChats();
         renderMessages();
+        renderChatManagerChats();
     }
 }
 
 function renameChat(chatId, event) {
-    event.stopPropagation();
+    if (event) event.stopPropagation();
     const chat = chats.find(c => c.id === chatId);
     const newTitle = prompt('Enter new chat title:', chat.title);
     if (newTitle && newTitle.trim()) {
         chat.title = newTitle.trim();
         saveToCookie();
         renderChats();
+        renderMessages();
+        renderChatManagerChats();
     }
 }
 
@@ -231,6 +248,20 @@ function renderChats() {
     const list = document.getElementById('chatsList');
     if (!list) return;
     list.innerHTML = chats.map(chat => `
+        <div class="chat-item ${chat.id === currentChatId ? 'active' : ''}" onclick="selectChat(${chat.id})">
+            <span class="chat-title">${chat.title}</span>
+            <div class="chat-actions">
+                <button class="chat-action-btn" onclick="renameChat(${chat.id}, event)" title="Rename">✏️</button>
+                <button class="chat-action-btn" onclick="deleteChat(${chat.id}, event)" title="Delete">🗑️</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderChatManagerChats() {
+    const managerList = document.getElementById('chatManagerChatsList');
+    if (!managerList) return;
+    managerList.innerHTML = chats.map(chat => `
         <div class="chat-item ${chat.id === currentChatId ? 'active' : ''}" onclick="selectChat(${chat.id})">
             <span class="chat-title">${chat.title}</span>
             <div class="chat-actions">
@@ -442,12 +473,19 @@ function toggleSidebar() {
 document.addEventListener('click', function(e){
     const sidebar = document.querySelector('.sidebar');
     const toggleBtn = document.querySelector('.toggle-sidebar-btn');
+    const chatManagerModal = document.getElementById('chatManagerModal');
+    
     if (window.innerWidth <= 768 && sidebar && sidebar.classList.contains('active')) {
         if (!sidebar.contains(e.target) && (!toggleBtn || !toggleBtn.contains(e.target))) {
             sidebar.classList.remove('active');
             document.body.style.overflow = '';
         }
     }
+
+    if (chatManagerModal && chatManagerModal.classList.contains('active') && !chatManagerModal.querySelector('.modal-content').contains(e.target) && !toggleBtn.contains(e.target)) {
+        closeChatManager();
+    }
+    
     if (document.getElementById('tooltip') && document.getElementById('tooltip').style.display === 'block') {
         hideTooltip();
     }
@@ -633,6 +671,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     syncModeUI();
+    
+    const toggleSidebarBtn = document.querySelector('.toggle-sidebar-btn');
+    if (toggleSidebarBtn) {
+        toggleSidebarBtn.onclick = openChatManager;
+    }
 });
 
 window.selectChat = selectChat;
@@ -644,3 +687,6 @@ window.openSettings = openSettings;
 window.closeSettings = closeSettings;
 window.toggleSidebar = toggleSidebar;
 window.copyCode = copyCode;
+window.createNewChat = createNewChat;
+window.openChatManager = openChatManager;
+window.closeChatManager = closeChatManager;
