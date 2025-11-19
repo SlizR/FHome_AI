@@ -286,6 +286,9 @@ body {
     backdrop-filter: blur(10px);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     flex-shrink: 0;
+    position: sticky; 
+    bottom: 0;
+    z-index: 30;
 }
 
 .input-wrapper {
@@ -562,6 +565,10 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
     background: rgba(46, 166, 125, 0.7);
+}
+
+.message.ai .message-content .code-block-container code {
+    color: #000; 
 }
 
 @media (max-width: 768px) {
