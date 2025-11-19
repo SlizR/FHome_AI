@@ -683,6 +683,39 @@ const messageInput = document.getElementById('messageInput');
        }
 });
 
+function openChatModal() {
+    const modal = document.getElementById('chatModal');
+    modal.classList.add('active');
+
+    const modalList = document.getElementById('chatModalList');
+    modalList.innerHTML = chats.map(chat => `
+        <div class="chat-item ${chat.id === currentChatId ? 'active' : ''}" onclick="selectChat(${chat.id}); closeChatModal();">
+            <span class="chat-title">${chat.title}</span>
+            <div class="chat-actions" style="opacity: 1;">
+                <button class="chat-action-btn" onclick="renameChat(${chat.id}, event)">✏️</button>
+                <button class="chat-action-btn" onclick="deleteChat(${chat.id}, event)">🗑️</button>
+            </div>
+        </div>
+    `).join('');
+
+    const newChatBtn = document.createElement('button');
+    newChatBtn.className = 'new-chat-btn';
+    newChatBtn.textContent = '+ New Chat';
+    newChatBtn.onclick = () => { createNewChat(); renderChats(); renderChatManagerChats(); };
+    modalList.parentNode.insertBefore(newChatBtn, modalList);
+}
+
+document.getElementById('chatModal').addEventListener('click', (e) => {
+    if (e.target.id === 'chatModal') {
+        closeChatModal();
+    }
+});
+
+function closeChatModal() {
+    const modal = document.getElementById('chatModal');
+    modal.classList.remove('active');
+}
+
 window.selectChat = selectChat;
 window.deleteChat = deleteChat;
 window.renameChat = renameChat;
