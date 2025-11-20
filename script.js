@@ -1,4 +1,6 @@
 const WORKER_URL = 'https://gemini-api-proxy.markd-voznyuk.workers.dev';
+const MESSAGE_LIMIT = 70;
+const LIMIT_DURATION = 60 * 60 * 1000;
 
 let chats = [];
 let currentChatId = null;
@@ -10,6 +12,46 @@ let settings = {
     userHobby: '',
     userBio: ''
 };
+let messageTimestamps = JSON.parse(localStorage.getItem('messageTimestamps') || '[]');
+
+function saveTimestamps() {
+    localStorage.setItem('messageTimestamps', JSON.stringify(messageTimestamps));
+}
+
+function canSendMessage() {
+    const now = Date.now();
+    messageTimestamps = messageTimestamps.filter(ts => now - ts < LIMIT_DURATION);
+    saveTimestamps();
+    return messageTimestamps.length < MESSAGE_LIMIT;
+}
+
+function getNextAvailableTime() {
+    const now = Date.now();
+    if (messageTimestamps.length < MESSAGE_LIMIT) return 0;
+    return LIMIT_DURATION - (now - messageTimestamps[0]);
+}
+
+function updateMessageLimitUI() {
+    const input = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendBtn');
+
+    const timeLeft = getNextAvailableTime();
+    const canSend = canSendMessage();
+
+    if (!input || !sendBtn) return;
+
+    if (canSend) {
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'Send';
+        input.placeholder = 'Ask...';
+    } else {
+        sendBtn.disabled = true;
+        sendBtn.textContent = '✖';
+        const minutes = Math.floor(timeLeft / 60000);
+        const seconds = Math.floor((timeLeft % 60000) / 1000);
+        input.placeholder = `Until the limit expired: ${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
+    }
+}
 
 function escapeHTML(str) {
     return str.replace(/[&<>"'\/]/g, function (c) {
@@ -23,6 +65,8 @@ function escapeHTML(str) {
         })[c];
     });
 }
+
+setInterval(updateMessageLimitUI, 1000);
 
 function copyCode(button) {
     const codeBlock = button.closest('.code-block-container').querySelector('pre code');
@@ -369,30 +413,43 @@ function prepareMessageForAI() {
 async function sendMessage() {
     const input = document.getElementById('messageInput');
     const sendBtn = document.getElementById('sendBtn');
-    
+
+    if (!input || !sendBtn) return;
+
+    if (!canSendMessage()) {
+        updateMessageLimitUI();
+        return;
+    }
+
+    messageTimestamps.push(Date.now());
+    saveTimestamps();
+    updateMessageLimitUI();
+
     const prepared = prepareMessageForAI();
     const uiMessage = prepared.uiMessage;
     const aiMessage = prepared.aiMessage;
-    
+
     if (!aiMessage.trim()) return;
 
     if (!currentChatId) {
         createNewChat();
     }
+
     const chat = chats.find(c => c.id === currentChatId);
-    
+
     chat.messages.push({ role: 'user', content: uiMessage });
-    
+
     if (chat.messages.length === 1) {
         chat.title = uiMessage.substring(0, 30) + (uiMessage.length > 30 ? '...' : '');
     }
-    
+
     input.value = '';
     syncModeUI();
     renderChats();
     renderMessages();
+
     const container = document.getElementById('messagesContainer');
-    
+
     const typingIndicator = document.createElement('div');
     typingIndicator.className = 'message ai';
     typingIndicator.innerHTML = `
@@ -407,8 +464,8 @@ async function sendMessage() {
     `;
     container.appendChild(typingIndicator);
     container.scrollTop = container.scrollHeight;
-    if (sendBtn) sendBtn.disabled = true;
-    
+    sendBtn.disabled = true;
+
     try {
         const response = await fetch(WORKER_URL, {
             method: 'POST',
@@ -426,12 +483,12 @@ async function sendMessage() {
             const aiMessageContent = data.candidates[0].content.parts[0].text;
             chat.messages.push({ role: 'ai', content: aiMessageContent });
         } else if (data.error) {
-            let errorMessage = `AI Response Error: ${data.error.message || JSON.stringify(data)}`;
+            const errorMessage = `AI Response Error: ${data.error.message || JSON.stringify(data)}`;
             chat.messages.push({ role: 'ai', content: `Sorry, I encountered an error processing your request. Details: ${errorMessage}` });
         } else {
             chat.messages.push({ role: 'ai', content: 'Sorry, I encountered an error processing your request (AI response failed).' });
         }
-        
+
         saveToCookie();
         renderMessages();
     } catch (error) {
@@ -439,10 +496,9 @@ async function sendMessage() {
         chat.messages.push({ role: 'ai', content: `Sorry, I couldn't connect to the AI service. Details: ${error.message}` });
         renderMessages();
     }
-    
-    if (sendBtn) sendBtn.disabled = false;
-}
 
+    updateMessageLimitUI();
+}
 function handleKeyPress(event) {
     const input = document.getElementById('messageInput');
     if (event.key === 'Enter') {
