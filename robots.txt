@@ -4,5 +4,5 @@ Disallow: /*
 
 Allow: /$
 
-Sitemap: https://fhome.pp.ua/sitemap.xml
-Host: fhome.pp.ua
+Sitemap: https://fhai.pp.ua/sitemap.xml
+Host: fhai.pp.ua
