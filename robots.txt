@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /*
+
+Allow: /$
+
+Sitemap: https://fhome.pp.ua/sitemap.xml
+Host: fhome.pp.ua
