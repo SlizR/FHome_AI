@@ -775,6 +775,21 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+(function(){
+    const gaScript = document.createElement('script');
+    gaScript.async = true;
+    gaScript.src = "https://www.googletagmanager.com/gtag/js?id=G-JGT0TXWH5W";
+    document.head.appendChild(gaScript);
+
+    gaScript.onload = function() {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', 'G-JGT0TXWH5W');
+    };
+})();
+
 window.selectChat = selectChat;
 window.deleteChat = deleteChat;
 window.renameChat = renameChat;
