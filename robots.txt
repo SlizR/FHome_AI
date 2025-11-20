@@ -1,8 +1,12 @@
 User-agent: *
 Allow: /
-Disallow: /*
 
-Allow: /$
+Disallow: /*.jpg$
+Disallow: /*.jpeg$
+Disallow: /*.png$
+Disallow: /*.gif$
+Disallow: /*.webp$
+Disallow: /*.svg$
 
 Sitemap: https://fhai.pp.ua/sitemap.xml
 Host: fhai.pp.ua
