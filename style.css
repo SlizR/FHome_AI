@@ -879,26 +879,14 @@ body {
     }
 }
 .settings-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-top: 15px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.settings-footer span {
-    font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.5);
-}
-
-.settings-footer {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding-top: 15px;
+    padding: 15px 20px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     flex-wrap: wrap;
+    gap: 8px;
 }
 
 .settings-footer span {
@@ -907,40 +895,21 @@ body {
 }
 
 .help-center-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background-color: transparent;
-    border: 1px solid rgba(46, 166, 125, 0.3);
-    color: #2ea67d;
-    font-size: 1.1rem;
-    font-weight: bold;
-    text-decoration: none;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    padding: 0;
-}
-
-.help-center-btn:hover {
-    background-color: rgba(46, 166, 125, 0.1);
-    border-color: #2ea67d;
-    color: #4cff9d;
-    box-shadow: 0 0 5px rgba(46, 166, 125, 0.5);
-    transform: scale(1.1);
-}
-
-.help-center-btn:active {
-    transform: scale(0.95);
-    background-color: rgba(46, 166, 125, 0.2);
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 @media (max-width: 400px) {
+    .help-center-btn {
+        position: static;
+        transform: none;
+        margin-top: 10px;
+    }
     .settings-footer {
         justify-content: center;
         gap: 5px;
-        font-size: 0.8rem;
+        text-align: center;
     }
 }
