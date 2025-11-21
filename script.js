@@ -9,7 +9,8 @@ let settings = {
     borderRadius: 18,
     userAge: '',
     userHobby: '',
-    userBio: ''
+    userBio: '',
+    userPreferences: ''
 };
 
 const uiOriginal = {
@@ -212,6 +213,9 @@ function applySettings() {
     
     const radiusValue = document.getElementById('radiusValue');
     if (radiusValue) radiusValue.textContent = settings.borderRadius;
+
+    const userPreferencesInput = document.getElementById('userPreferencesInput');
+    if (userPreferencesInput) userPreferencesInput.value = settings.userPreferences || '';
     
     document.getElementById('userAgeInput').value = settings.userAge || '';
     document.getElementById('userHobbyInput').value = settings.userHobby || '';
@@ -246,6 +250,7 @@ function closeSettings() {
     settings.userAge = document.getElementById('userAgeInput').value || '';
     settings.userHobby = document.getElementById('userHobbyInput').value || '';
     settings.userBio = document.getElementById('userBioInput').value || '';
+    settings.userPreferences = document.getElementById('userPreferencesInput').value || '';
     applySettings();
     saveToCookie();
     renderMessages();
