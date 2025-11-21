@@ -891,8 +891,23 @@ body {
     color: rgba(255, 255, 255, 0.5);
 }
 
-.help-center-btn {
+.settings-footer {
     display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    flex-wrap: wrap;
+}
+
+.settings-footer span {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.help-center-btn {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 24px;
@@ -906,7 +921,7 @@ body {
     text-decoration: none;
     cursor: pointer;
     transition: all 0.2s ease;
-    padding-top: 2px;
+    padding: 0;
 }
 
 .help-center-btn:hover {
@@ -920,4 +935,12 @@ body {
 .help-center-btn:active {
     transform: scale(0.95);
     background-color: rgba(46, 166, 125, 0.2);
+}
+
+@media (max-width: 400px) {
+    .settings-footer {
+        justify-content: center;
+        gap: 5px;
+        font-size: 0.8rem;
+    }
 }
