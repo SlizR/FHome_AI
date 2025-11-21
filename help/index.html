@@ -1,466 +1,463 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FHome AI - Help Center</title>
-    <meta name="description" content="FHome AI® Help Center – FHome AI® Help Center and FAQ">
-    <meta name="keywords" content="AI, education, training, schoolchildren, students, FHome, Sliz, artificial intelligence, help, center, FAQ">
-    <meta name="author" content="Sliz®">
-    <meta name="robots" content="index, follow">
-    <link rel="icon" type="image/ico" href="https://fhai.pp.ua/help/favicon.ico">
-    <link rel="apple-touch-icon" href="https://fhai.pp.ua/help/icon.png">
-    <meta property="og:title" content="FHome AI® - Education AI®">
-    <meta property="og:description" content="FHome AI® Help Center – FHome AI® Help Center and FAQ">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://fhai.pp.ua/help/">
-    <meta property="og:image" content="https://fhai.pp.ua/help/favicon.ico">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="FHome AI® Help Center - Info and FAQ of FHome AI®">
-    <meta name="twitter:description" content="FHome AI® Help Center – FHome AI® Help Center and FAQ">
-    <meta name="twitter:image" content="https://fhai.pp.ua/help/icon.png">
-    <script type="application/ld+json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FHome AI - Help Center</title>
+    <meta name="description" content="FHome AI® Help Center – FHome AI® Help Center and FAQ">
+    <meta name="keywords" content="AI, education, training, schoolchildren, students, FHome, Sliz, artificial intelligence, help, center, FAQ">
+    <meta name="author" content="Sliz®">
+    <meta name="robots" content="index, follow">
+    <link rel="icon" type="image/ico" href="https://fhai.pp.ua/help/favicon.ico">
+    <link rel="apple-touch-icon" href="https://fhai.pp.ua/help/icon.png">
+    <meta property="og:title" content="FHome AI® - Education AI®">
+    <meta property="og:description" content="FHome AI® Help Center – FHome AI® Help Center and FAQ">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://fhai.pp.ua/help/">
+    <meta property="og:image" content="https://fhai.pp.ua/help/favicon.ico">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="FHome AI® Help Center - Info and FAQ of FHome AI®">
+    <meta name="twitter:description" content="FHome AI® Help Center – FHome AI® Help Center and FAQ">
+    <meta name="twitter:image" content="https://fhai.pp.ua/help/icon.png">
+    <script type="application/ld+json">
 {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "FHome AI® Help Center",
-    "url": "https://fhai.pp.ua/help/",
-    "logo": "https://fhai.pp.ua/help/favicon.ico",
-    "description": "FHome AI® is an educational AI created by Sliz for personal and learning use, offering versatile features to assist students, teachers, and knowledge seekers."
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "FHome AI® Help Center",
+    "url": "https://fhai.pp.ua/help/",
+    "logo": "https://fhai.pp.ua/help/favicon.ico",
+    "description": "FHome AI® is an educational AI created by Sliz for personal and learning use, offering versatile features to assist students, teachers, and knowledge seekers."
 }
-    </script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0a1f0a 0%, #1a3a1a 50%, #0d2b0d 100%);
-            color: #e0ffe0;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a1f0a 0%, #1a3a1a 50%, #0d2b0d 100%);
+            color: #e0ffe0;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
 
-        .particles {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            z-index: 0;
-            overflow: hidden;
-            pointer-events: none;
-        }
+        .particles {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
 
-        .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: rgba(76, 255, 76, 0.3);
-            border-radius: 50%;
-            animation: float 15s infinite;
-        }
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(76, 255, 76, 0.3);
+            border-radius: 50%;
+            animation: float 15s infinite;
+        }
 
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0) translateX(0);
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-100vh) translateX(100px);
-                opacity: 0;
-            }
-        }
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
 
-        header {
-            position: relative;
-            z-index: 10;
-            padding: 2rem 5%;
-            background: rgba(10, 31, 10, 0.8);
-            backdrop-filter: blur(10px);
-            border-bottom: 2px solid rgba(76, 255, 76, 0.2);
-            animation: slideDown 0.6s ease;
-        }
+        header {
+            position: relative;
+            z-index: 10;
+            padding: 2rem 5%;
+            background: rgba(10, 31, 10, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid rgba(76, 255, 76, 0.2);
+            animation: slideDown 0.6s ease;
+        }
 
-        @keyframes slideDown {
-            from {
-                transform: translateY(-100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
 
-        .header-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-        .logo {
-            font-size: 2rem;
-            font-weight: bold;
-            background: linear-gradient(135deg, #4cff4c, #00ff88);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: glow 2s ease-in-out infinite;
-        }
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #4cff4c, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: glow 2s ease-in-out infinite;
+        }
 
-        @keyframes glow {
-            0%, 100% {
-                filter: drop-shadow(0 0 10px rgba(76, 255, 76, 0.5));
-            }
-            50% {
-                filter: drop-shadow(0 0 20px rgba(76, 255, 76, 0.8));
-            }
-        }
+        @keyframes glow {
+            0%, 100% {
+                filter: drop-shadow(0 0 10px rgba(76, 255, 76, 0.5));
+            }
+            50% {
+                filter: drop-shadow(0 0 20px rgba(76, 255, 76, 0.8));
+            }
+        }
 
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
 
-        .nav-links a {
-            color: #a0ffa0;
-            text-decoration: none;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            position: relative;
-        }
+        .nav-links a {
+            color: #a0ffa0;
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
 
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: #4cff4c;
-            transition: width 0.3s ease;
-        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #4cff4c;
+            transition: width 0.3s ease;
+        }
 
-        .nav-links a:hover::after {
-            width: 100%;
-        }
+        .nav-links a:hover::after {
+            width: 100%;
+        }
 
-        .nav-links a:hover {
-            color: #4cff4c;
-            transform: translateY(-2px);
-        }
+        .nav-links a:hover {
+            color: #4cff4c;
+            transform: translateY(-2px);
+        }
 
-        main {
-            position: relative;
-            z-index: 5;
-            padding: 4rem 5%;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
+        main {
+            position: relative;
+            z-index: 5;
+            padding: 4rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
 
-        .hero {
-            text-align: center;
-            margin-bottom: 4rem;
-            animation: fadeInUp 0.8s ease;
-        }
+        .hero {
+            text-align: center;
+            margin-bottom: 4rem;
+            animation: fadeInUp 0.8s ease;
+        }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-        .hero h1 {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, #4cff4c, #00ff88, #4cff4c);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            background-size: 200% auto;
-            animation: shine 3s linear infinite;
-        }
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #4cff4c, #00ff88, #4cff4c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% auto;
+            animation: shine 3s linear infinite;
+        }
 
-        @keyframes shine {
-            to {
-                background-position: 200% center;
-            }
-        }
+        @keyframes shine {
+            to {
+                background-position: 200% center;
+            }
+        }
 
-        .hero p {
-            font-size: 1.4rem;
-            color: #b0ffb0;
-            max-width: 800px;
-            margin: 0 auto;
-            line-height: 1.8;
-        }
+        .hero p {
+            font-size: 1.4rem;
+            color: #b0ffb0;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
 
-        .help-section {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
-            gap: 3rem;
-            margin-top: 4rem;
-        }
+        .help-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 3rem;
+            margin-top: 4rem;
+        }
 
-        .help-card {
-            background: linear-gradient(135deg, rgba(26, 58, 26, 0.6), rgba(13, 43, 13, 0.6));
-            border: 2px solid rgba(76, 255, 76, 0.3);
-            border-radius: 20px;
-            padding: 3rem;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.4s ease;
-            animation: fadeInUp 0.8s ease;
-            animation-fill-mode: both;
-        }
+        .help-card {
+            background: linear-gradient(135deg, rgba(26, 58, 26, 0.6), rgba(13, 43, 13, 0.6));
+            border: 2px solid rgba(76, 255, 76, 0.3);
+            border-radius: 20px;
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            animation: fadeInUp 0.8s ease;
+            animation-fill-mode: both;
+        }
 
-        .help-card:nth-child(1) {
-            animation-delay: 0.2s;
-        }
+        .help-card:nth-child(1) {
+            animation-delay: 0.2s;
+        }
 
-        .help-card:nth-child(2) {
-            animation-delay: 0.4s;
-        }
+        .help-card:nth-child(2) {
+            animation-delay: 0.4s;
+        }
 
-        .help-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(76, 255, 76, 0.1) 0%, transparent 70%);
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
+        .help-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(76, 255, 76, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
 
-        .help-card:hover::before {
-            opacity: 1;
-            animation: rotate 10s linear infinite;
-        }
+        .help-card:hover::before {
+            opacity: 1;
+            animation: rotate 10s linear infinite;
+        }
 
-        @keyframes rotate {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(360deg);
-            }
-        }
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
-        .help-card:hover {
-            transform: translateY(-10px);
-            border-color: rgba(76, 255, 76, 0.6);
-            box-shadow: 0 20px 60px rgba(76, 255, 76, 0.3);
-        }
+        .help-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(76, 255, 76, 0.6);
+            box-shadow: 0 20px 60px rgba(76, 255, 76, 0.3);
+        }
 
-        .card-icon {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 2rem;
-            position: relative;
-            z-index: 1;
-            background: transparent;
-            box-shadow: 0 0 15px rgba(76, 255, 76, 0.5);
-        }
+        .card-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 1;
+            background: transparent;
+            box-shadow: 0 0 15px rgba(76, 255, 76, 0.5);
+        }
 
-        .card-icon img {
-            width: 120%;
-            height: 120%;
-            object-fit: cover;
-            display: block;
-            transform: translate(-10%, -10%);
-        }
+        .card-icon img {
+            width: 120%; 
+            height: 120%; 
+            object-fit: cover;
+            display: block;
+        }
 
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
-            }
-        }
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
 
-        .help-card h2 {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            color: #4cff4c;
-            position: relative;
-            z-index: 1;
-        }
+        .help-card h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #4cff4c;
+            position: relative;
+            z-index: 1;
+        }
 
-        .help-card p {
-            font-size: 1.1rem;
-            color: #c0ffc0;
-            line-height: 1.8;
-            margin-bottom: 2rem;
-            position: relative;
-            z-index: 1;
-        }
+        .help-card p {
+            font-size: 1.1rem;
+            color: #c0ffc0;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 1;
+        }
 
-        .learn-more-btn {
-            display: inline-block;
-            padding: 1rem 2.5rem;
-            background: linear-gradient(135deg, #4cff4c, #00ff88);
-            color: #0a1f0a;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 1.1rem;
-            border-radius: 50px;
-            position: relative;
-            z-index: 1;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
+        .learn-more-btn {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, #4cff4c, #00ff88);
+            color: #0a1f0a;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
 
-        .learn-more-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #00ff88, #4cff4c);
-            transition: left 0.3s ease;
-            z-index: -1;
-        }
+        .learn-more-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #00ff88, #4cff4c);
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
 
-        .learn-more-btn:hover::before {
-            left: 0;
-        }
+        .learn-more-btn:hover::before {
+            left: 0;
+        }
 
-        .learn-more-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 30px rgba(76, 255, 76, 0.4);
-        }
+        .learn-more-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(76, 255, 76, 0.4);
+        }
 
-        footer {
-            position: relative;
-            z-index: 10;
-            text-align: center;
-            padding: 2rem 5%;
-            margin-top: 4rem;
-            background: rgba(10, 31, 10, 0.8);
-            backdrop-filter: blur(10px);
-            border-top: 2px solid rgba(76, 255, 76, 0.2);
-            color: #a0ffa0;
-        }
+        footer {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 2rem 5%;
+            margin-top: 4rem;
+            background: rgba(10, 31, 10, 0.8);
+            backdrop-filter: blur(10px);
+            border-top: 2px solid rgba(76, 255, 76, 0.2);
+            color: #a0ffa0;
+        }
 
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
-            }
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
 
-            .hero p {
-                font-size: 1.1rem;
-            }
+            .hero p {
+                font-size: 1.1rem;
+            }
 
-            .help-section {
-                grid-template-columns: 1fr;
-                gap: 2rem;
-            }
+            .help-section {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
 
-            .nav-links {
-                gap: 1rem;
-            }
+            .nav-links {
+                gap: 1rem;
+            }
 
-            .header-content {
-                flex-direction: column;
-                gap: 1rem;
-            }
-        }
-    </style>
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="particles" id="particles"></div>
+    <div class="particles" id="particles"></div>
 
-    <header>
-        <div class="header-content">
-            <div class="logo">FHome AI</div>
-            <nav class="nav-links">
-                <a href="#hero">Home</a>
-                <a href="#help-section-anchor">Help Topics</a>
-                <a href="https://fhai.pp.ua/contact/">Contact</a>
+    <header>
+        <div class="header-content">
+            <div class="logo">FHome AI®</div>
+            <nav class="nav-links">
+               <a href="https://fhai.pp.ua/">Back to AI</a>
+               <a href="https://github.com/SlizR/FHomeAI/" target="_blank">FHome AI® Git</a>
+               <a href="https://github.com/SlizR/" target="_blank">Sliz® Git</a>
             </nav>
-        </div>
-    </header>
+        </div>
+    </header>
 
-    <main>
-        <section class="hero" id="hero"> 
-            <h1>FHome AI® Help Center</h1>
-            <p>Welcome to the FHome AI® Help Center. Here you'll find answers to frequently asked questions and information about the various features, functions, and more in this project.</p>
-        </section>
+    <main>
+        <section class="hero" id="hero"> 
+            <h1>FHome AI® Help Center</h1>
+            <p>Welcome to the FHome AI® Help Center. Here you'll find answers to frequently asked questions and information about the various features, functions, and more in this project.</p>
+        </section>
 
-        <section class="help-section" id="help-section-anchor"> 
-            <div class="help-card">
-                <div class="card-icon">
-                <img src="fhome.png" alt="FHome AI Icon" style="width: 60%; height: 60%;">
-                </div>
-                <h2>What is FHome AI®?</h2>
-                <p>Visit the wiki form to learn more about the Sliz project®.</p>
-                <a href="https://fhai.pp.ua/help/fhome/" class="learn-more-btn">Learn More</a>
-            </div>
+        <section class="help-section" id="help-section-anchor"> 
+            <div class="help-card">
+                <div class="card-icon">
+                <img src="fhome.png" alt="FHome AI Icon">                 </div>
+                <h2>What is FHome AI®?</h2>
+                <p>Visit the wiki form to learn more about the Sliz project®.</p>
+                <a href="https://fhai.pp.ua/help/fhome/" class="learn-more-btn">Learn More</a>
+            </div>
 
-            <div class="help-card">
-                <div class="card-icon">
-                <img src="sliz.png" alt="Sliz Icon" style="width: 60%; height: 60%;">
-                </div>
-                <h2>What is Sliz®?</h2>
-                <p>Learn more about Sliz, a company founded by a group of enthusiasts, developers, and educators.</p>
-                <a href="https://fhai.pp.ua/help/sliz/" class="learn-more-btn">Learn More</a>
-            </div>
-        </section>
-    </main>
+            <div class="help-card">
+                <div class="card-icon">
+                <img src="sliz.png" alt="Sliz Icon">                 </div>
+                <h2>What is Sliz®?</h2>
+                <p>Learn more about Sliz, a company founded by a group of enthusiasts, developers, and educators.</p>
+                <a href="https://fhai.pp.ua/help/sliz/" class="learn-more-btn">Learn More</a>
+            </div>
+        </section>
+    </main>
 
-    <footer>
-        <p>FHome AI® • v15.7 • © 2025 Sliz®</p>
-    </footer>
+    <footer>
+        <p>FHome AI® • v15.7 • © 2025 Sliz®</p>
+    </footer>
 
-    <script>
-        const particlesContainer = document.getElementById('particles');
-        for (let i = 0; i < 50; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.animationDelay = Math.random() * 15 + 's';
-            particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
-            particlesContainer.appendChild(particle);
-        }
+    <script>
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 15 + 's';
+            particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+            particlesContainer.appendChild(particle);
+        }
 
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-    </script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>
