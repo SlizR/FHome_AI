@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FHome AI - Help Center</title>
-    <link rel="icon" href="favicon.ico">
     <meta name="description" content="FHome AI® Help Center – FHome AI® Help Center and FAQ">
     <meta name="keywords" content="AI, education, training, schoolchildren, students, FHome, Sliz, artificial intelligence, help, center, FAQ">
     <meta name="author" content="Sliz®">
@@ -22,12 +21,12 @@
     <meta name="twitter:image" content="https://fhai.pp.ua/help/icon.png">
     <script type="application/ld+json">
 {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "FHome AI® Help Center",
-  "url": "https://fhai.pp.ua/help/",
-  "logo": "https://fhai.pp.ua/help/favicon.ico",
-  "description": "FHome AI® is an educational AI created by Sliz for personal and learning use, offering versatile features to assist students, teachers, and knowledge seekers."
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "FHome AI® Help Center",
+    "url": "https://fhai.pp.ua/help/",
+    "logo": "https://fhai.pp.ua/help/favicon.ico",
+    "description": "FHome AI® is an educational AI created by Sliz for personal and learning use, offering versatile features to assist students, teachers, and knowledge seekers."
 }
     </script>
     <style>
@@ -215,7 +214,7 @@
 
         .help-section {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
             gap: 3rem;
             margin-top: 4rem;
         }
@@ -272,28 +271,28 @@
             box-shadow: 0 20px 60px rgba(76, 255, 76, 0.3);
         }
 
-.card-icon {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 2rem;
-    position: relative;
-    z-index: 1;
-    background: transparent;
-    box-shadow: 0 0 15px rgba(76, 255, 76, 0.5);
-}
+        .card-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 1;
+            background: transparent;
+            box-shadow: 0 0 15px rgba(76, 255, 76, 0.5);
+        }
 
-.card-icon img {
-    width: 120%;
-    height: 120%;
-    object-fit: cover;
-    display: block;
-    transform: translate(-10%, -10%);
-}
+        .card-icon img {
+            width: 120%;
+            height: 120%;
+            object-fit: cover;
+            display: block;
+            transform: translate(-10%, -10%);
+        }
 
         @keyframes pulse {
             0%, 100% {
@@ -400,19 +399,24 @@
     <header>
         <div class="header-content">
             <div class="logo">FHome AI</div>
+            <nav class="nav-links">
+                <a href="#hero">Home</a>
+                <a href="#help-section-anchor">Help Topics</a>
+                <a href="https://fhai.pp.ua/contact/">Contact</a>
+            </nav>
         </div>
     </header>
 
     <main>
-        <section class="hero">
+        <section class="hero" id="hero"> 
             <h1>FHome AI® Help Center</h1>
-            <p>Welcome to the Home AI® Help Center. Here you'll find answers to frequently asked questions and information about the various features, functions, and more in this project.</p>
+            <p>Welcome to the FHome AI® Help Center. Here you'll find answers to frequently asked questions and information about the various features, functions, and more in this project.</p>
         </section>
 
-        <section class="help-section">
+        <section class="help-section" id="help-section-anchor"> 
             <div class="help-card">
                 <div class="card-icon">
-                <img src="fhome.png" alt="icon" style="width: 60%; height: 60%;">
+                <img src="fhome.png" alt="FHome AI Icon" style="width: 60%; height: 60%;">
                 </div>
                 <h2>What is FHome AI®?</h2>
                 <p>Visit the wiki form to learn more about the Sliz project®.</p>
@@ -421,7 +425,7 @@
 
             <div class="help-card">
                 <div class="card-icon">
-                <img src="sliz.png" alt="icon" style="width: 60%; height: 60%;">
+                <img src="sliz.png" alt="Sliz Icon" style="width: 60%; height: 60%;">
                 </div>
                 <h2>What is Sliz®?</h2>
                 <p>Learn more about Sliz, a company founded by a group of enthusiasts, developers, and educators.</p>
@@ -455,15 +459,6 @@
                         block: 'start'
                     });
                 }
-            });
-        });
-
-        document.querySelectorAll('.learn-more-btn').forEach(btn => {
-            btn.addEventListener('mouseenter', function() {
-                this.style.transform = 'scale(1.05)';
-            });
-            btn.addEventListener('mouseleave', function() {
-                this.style.transform = 'scale(1)';
             });
         });
     </script>
