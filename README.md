@@ -188,7 +188,6 @@ const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/another
 ## 🧩 Known Limitations
 
 * Cookies can store limited data (roughly 3–4 MB)
-* API key is stored client-side (not ideal for production apps)
 * No streaming support — responses appear after full generation
 
 ---
@@ -210,7 +209,7 @@ This project is licensed under the **Apache License 2.0**.
 ### Required attribution:
 
 * **Original author:** Sliz®
-* **First public version:** Created by Sliz®
+* **First public version:** Mavox-ID (**Creator Sliz®**)
 
 Full license is available in the `LICENSE` file.
 
@@ -218,6 +217,6 @@ Full license is available in the `LICENSE` file.
 
 ## 💡 Final Notes
 
-FHome AI® was built to teach — not to replace industrial AI tools — and shows how surprisingly small and understandable an AI chat interface can be.
+**FHome AI®** was built to teach — not to replace industrial AI tools — and shows how surprisingly small and understandable an AI chat interface can be.
 
-If you use or modify it, just keep the attribution lines (as required by the Apache 2.0 license) and enjoy building cool things 🚀 (Latest stable version: **924.stable, Updated description and meta items btw**)
+If you use or modify it, just keep the attribution lines (as required by the Apache 2.0 license) and enjoy building cool things 🚀 (Latest stable version: **930.stable, Added a limit and a new feature in the settings: Your wishes for AI**)
