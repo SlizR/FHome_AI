@@ -1,5 +1,64 @@
+# ===============================================================
+# Robots.txt for fhai.pp.ua
+# ===============================================================
+# Author: Sliz
+# Created: 2025-11-21
+# Information: Robots.txt file for fhai.pp.ua
+# ===============================================================
+
+# -----------------------------
+# General rule for all bots
+# -----------------------------
 User-agent: *
 Allow: /
+Crawl-delay: 5
 
+# -----------------------------
+# Sitemap and Host
+# -----------------------------
 Sitemap: https://fhai.pp.ua/sitemap.xml
 Host: fhai.pp.ua
+
+# -----------------------------
+# Rules for Googlebot
+# -----------------------------
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 2
+
+# -----------------------------
+# Rules for Bingbot
+# -----------------------------
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 10
+
+# -----------------------------
+# Rules for Yandex
+# -----------------------------
+User-agent: Yandex
+Allow: /
+Crawl-delay: 5
+Host: fhai.pp.ua
+
+# -----------------------------
+# Rules for Slurp (Yahoo)
+# -----------------------------
+User-agent: Slurp
+Allow: /
+Crawl-delay: 10
+
+# -------------------------
+# BKBB - Safe site system
+# -------------------------
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
