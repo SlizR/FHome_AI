@@ -2,7 +2,7 @@
 # Robots.txt for fhai.pp.ua
 # ===============================================================
 # Author: Sliz
-# Created: 2025-11-21
+# Created: 2025-11-22
 # Information: Robots.txt file for fhai.pp.ua
 # ===============================================================
 
@@ -11,7 +11,6 @@
 # -----------------------------
 User-agent: *
 Allow: /
-Crawl-delay: 5
 
 # -----------------------------
 # Sitemap and Host
@@ -24,21 +23,18 @@ Host: fhai.pp.ua
 # -----------------------------
 User-agent: Googlebot
 Allow: /
-Crawl-delay: 2
 
 # -----------------------------
 # Rules for Bingbot
 # -----------------------------
 User-agent: Bingbot
 Allow: /
-Crawl-delay: 10
 
 # -----------------------------
 # Rules for Yandex
 # -----------------------------
 User-agent: Yandex
 Allow: /
-Crawl-delay: 5
 Host: fhai.pp.ua
 
 # -----------------------------
@@ -46,7 +42,6 @@ Host: fhai.pp.ua
 # -----------------------------
 User-agent: Slurp
 Allow: /
-Crawl-delay: 10
 
 # -------------------------
 # BKBB - Safe site system
