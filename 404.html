@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>404 - FHome AI®</title>
   <link rel="icon" href="404.ico">
-    <meta name="author" content="Sliz®">
-    <meta name="robots" content="index, follow">
-    <link rel="icon" type="image/png" href="https://fhai.pp.ua/404.png">
-    <link rel="apple-touch-icon" href="https://fhai.pp.ua/404.png">
-    <meta property="og:type" content="website">
-    <meta property="og:image" content="https://fhai.pp.ua/404.png">
+  <meta name="author" content="Sliz®">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" type="image/png" href="https://fhai.pp.ua/404.png">
+  <link rel="apple-touch-icon" href="https://fhai.pp.ua/404.png">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://fhai.pp.ua/404.png">
   <style>
     * {
       margin: 0;
@@ -24,6 +24,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      overflow-x: hidden;
+      padding: 20px;
     }
     .neural-bg {
       position: fixed;
@@ -46,18 +48,10 @@
       stroke-width: 1;
       opacity: 0.2;
     }
-    .pulse {
-      fill: #4ade80;
-      opacity: 0;
-    }
+    
     @keyframes nodePulse {
       0%, 100% { opacity: 0.3; r: 3; }
       50% { opacity: 0.8; r: 5; }
-    }
-    @keyframes signalFlow {
-      0% { stroke-dashoffset: 100; opacity: 0; }
-      50% { opacity: 0.6; }
-      100% { stroke-dashoffset: 0; opacity: 0; }
     }
     
     @keyframes glowPulse {
@@ -110,7 +104,9 @@
       position: relative;
       z-index: 10;
       text-align: center;
-      padding: 40px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
     }
     .card {
       background: rgba(10, 26, 15, 0.85);
@@ -119,6 +115,7 @@
       border-radius: 24px;
       padding: 60px 80px;
       max-width: 600px;
+      width: 100%;
       animation: glowPulse 4s ease-in-out infinite, borderGlow 3s ease-in-out infinite; 
       transition: all 0.5s ease;
     }
@@ -169,10 +166,6 @@
       margin-bottom: 20px;
       animation: textGlow 3s ease-in-out infinite;
     }
-    @keyframes gradientShift {
-      0%, 100% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-    }
     .error-title {
       font-size: 28px;
       color: #e2e8f0;
@@ -199,6 +192,9 @@
       align-items: center;
       gap: 12px;
       transition: all 0.3s ease;
+      max-width: 100%;
+      flex-wrap: wrap;
+      justify-content: center;
     }
     .status-box.offline {
       background: rgba(220, 38, 38, 0.1);
@@ -212,6 +208,7 @@
       border-radius: 50%;
       animation: nodePulse 2s ease-in-out infinite;
       transition: background 0.3s ease;
+      flex-shrink: 0;
     }
     .status-dot.offline {
       background: #dc2626;
@@ -270,20 +267,58 @@
       width: 18px;
       height: 18px;
     }
-    .footer-links {
-      margin-top: 40px;
-      display: flex;
-      gap: 24px;
-      justify-content: center;
-    }
-    .footer-link {
-      color: #64748b;
-      text-decoration: none;
-      font-size: 13px;
-      transition: color 0.3s ease;
-    }
-    .footer-link:hover {
-      color: #22c55e;
+
+    @media (max-width: 768px) {
+      .card {
+        padding: 30px 20px;
+        backdrop-filter: none;
+        background: rgba(13, 30, 20, 0.95);
+        animation: none;
+        box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
+        width: 100%;
+      }
+      .card.error-mode {
+        background: rgba(30, 13, 13, 0.95);
+        animation: none;
+      }
+      .error-code {
+        font-size: 80px;
+        margin-bottom: 10px;
+        text-shadow: none;
+        animation: none;
+      }
+      .error-title {
+        font-size: 22px;
+      }
+      .logo {
+        margin-bottom: 25px;
+      }
+      .logo-icon {
+        width: 32px;
+        height: 32px;
+      }
+      .logo-text {
+        font-size: 20px;
+      }
+      .btn {
+        width: 100%;
+        justify-content: center;
+        padding: 12px 20px;
+      }
+      .buttons {
+        flex-direction: column;
+        gap: 12px;
+      }
+      .status-box {
+        width: 100%;
+        padding: 12px;
+      }
+      .neural-bg {
+        display: none;
+      }
+      .floating-particles {
+        display: none;
+      }
     }
   </style>
 </head>
@@ -292,6 +327,7 @@
     <svg id="neuralNetwork"></svg>
   </div>
   <div class="floating-particles" id="particles"></div>
+  
   <div class="content">
     <div class="card" id="mainCard">
       <div class="logo">
@@ -326,11 +362,17 @@
     </div>
   </div>
   <script>
+    const isMobile = window.innerWidth < 768;
+
     function updateErrorPath() {
         const currentPath = window.location.pathname;
         const titleElement = document.getElementById('errorTitle');
         if (currentPath && currentPath !== '/') {
-            titleElement.textContent = `Your page: ${currentPath}, not found`;
+            let displayPath = currentPath;
+            if(isMobile && displayPath.length > 20) {
+              displayPath = displayPath.substring(0, 17) + '...';
+            }
+            titleElement.textContent = `Your page: ${displayPath}, not found`;
         } else {
             titleElement.textContent = `Page not found`;
         }
@@ -375,83 +417,85 @@
         location.reload();
     }
 
-    const svg = document.getElementById('neuralNetwork');
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+    if (!isMobile) {
+        const svg = document.getElementById('neuralNetwork');
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        
+        const nodes = [];
+        const nodeCount = 60;
+        
+        function getDimensions() {
+          return { width: window.innerWidth, height: window.innerHeight };
+        }
+        
+        for (let i = 0; i < nodeCount; i++) {
+          nodes.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            vx: (Math.random() - 0.5) * 0.5,
+            vy: (Math.random() - 0.5) * 0.5
+          });
+        }
+        function createConnections() {
+          let connectionsHTML = '';
+          for (let i = 0; i < nodes.length; i++) {
+            for (let j = i + 1; j < nodes.length; j++) {
+              const dx = nodes[i].x - nodes[j].x;
+              const dy = nodes[i].y - nodes[j].y;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+              if (dist < 200) {
+                const opacity = (1 - dist / 200) * 0.3;
+                connectionsHTML += `<line class="connection" x1="${nodes[i].x}" y1="${nodes[i].y}" x2="${nodes[j].x}" y2="${nodes[j].y}" style="opacity: ${opacity}"/>`;
+              }
+            }
+          }
+          return connectionsHTML;
+        }
+        function createNodes() {
+          return nodes.map((node, i) => {
+            const delay = Math.random() * 3;
+            return `<circle class="node" cx="${node.x}" cy="${node.y}" r="3" style="animation: nodePulse ${2 + Math.random() * 2}s ease-in-out ${delay}s infinite"/>`;
+          }).join('');
+        }
+        function updateNetwork() {
+          const { width, height } = getDimensions();
+          nodes.forEach(node => {
+            node.x += node.vx;
+            node.y += node.vy;
+            if (node.x < 0 || node.x > width) node.vx *= -1;
+            if (node.y < 0 || node.y > height) node.vy *= -1;
+          });
+          svg.innerHTML = createConnections() + createNodes();
+          requestAnimationFrame(updateNetwork);
+        }
+
+        const particlesContainer = document.getElementById('particles');
     
-    const nodes = [];
-    const nodeCount = 60;
-    
-    function getDimensions() {
-      return { width: window.innerWidth, height: window.innerHeight };
-    }
-    
-    for (let i = 0; i < nodeCount; i++) {
-      nodes.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5
-      });
-    }
-    function createConnections() {
-      let connectionsHTML = '';
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const dx = nodes[i].x - nodes[j].x;
-          const dy = nodes[i].y - nodes[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 200) {
-            const opacity = (1 - dist / 200) * 0.3;
-            connectionsHTML += `<line class="connection" x1="${nodes[i].x}" y1="${nodes[i].y}" x2="${nodes[j].x}" y2="${nodes[j].y}" style="opacity: ${opacity}"/>`;
+        function createParticle() {
+          const particle = document.createElement('div');
+          particle.className = 'particle';
+          particle.style.left = Math.random() * 100 + '%';
+          particle.style.animationDuration = (8 + Math.random() * 8) + 's';
+          particle.style.animationDelay = Math.random() * 5 + 's';
+          particle.style.animation = `particleFloat ${8 + Math.random() * 8}s linear infinite`;
+          particlesContainer.appendChild(particle);
+          
+          if (particlesContainer.children.length > 30) {
+            particlesContainer.removeChild(particlesContainer.firstChild);
           }
         }
-      }
-      return connectionsHTML;
-    }
-    function createNodes() {
-      return nodes.map((node, i) => {
-        const delay = Math.random() * 3;
-        return `<circle class="node" cx="${node.x}" cy="${node.y}" r="3" style="animation: nodePulse ${2 + Math.random() * 2}s ease-in-out ${delay}s infinite"/>`;
-      }).join('');
-    }
-    function updateNetwork() {
-      const { width, height } = getDimensions();
-      nodes.forEach(node => {
-        node.x += node.vx;
-        node.y += node.vy;
-        if (node.x < 0 || node.x > width) node.vx *= -1;
-        if (node.y < 0 || node.y > height) node.vy *= -1;
-      });
-      svg.innerHTML = createConnections() + createNodes();
-      requestAnimationFrame(updateNetwork);
-    }
-    
-    const particlesContainer = document.getElementById('particles');
-    
-    function createParticle() {
-      const particle = document.createElement('div');
-      particle.className = 'particle';
-      particle.style.left = Math.random() * 100 + '%';
-      particle.style.animationDuration = (8 + Math.random() * 8) + 's';
-      particle.style.animationDelay = Math.random() * 5 + 's';
-      particle.style.animation = `particleFloat ${8 + Math.random() * 8}s linear infinite`;
-      particlesContainer.appendChild(particle);
-      
-      if (particlesContainer.children.length > 30) {
-        particlesContainer.removeChild(particlesContainer.firstChild);
-      }
+
+        updateNetwork();
+        for (let i = 0; i < 20; i++) {
+            setTimeout(createParticle, i * 200);
+        }
+        setInterval(createParticle, 800);
     }
     
     window.onload = function () {
       updateErrorPath();
       checkSystemStatus();
-
-      updateNetwork();
-      for (let i = 0; i < 20; i++) {
-        setTimeout(createParticle, i * 200);
-      }
-      setInterval(createParticle, 800);
     }
     
     window.addEventListener('resize', () => {
