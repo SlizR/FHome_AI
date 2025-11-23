@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>404 - FHome AI®</title>
   <link rel="icon" href="404.ico">
   <meta name="author" content="Sliz®">
@@ -17,330 +17,241 @@
       padding: 0;
       box-sizing: border-box;
     }
+    html, body {
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
+      overflow: hidden; 
+      position: fixed;
+    }
     body {
-      min-height: 100vh;
       background: linear-gradient(135deg, #0a1a0f 0%, #0d2818 50%, #0a1a0f 100%);
       font-family: 'Segoe UI', system-ui, sans-serif;
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow-x: hidden;
-      padding: 20px;
     }
+
+    .bg-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.4;
+      z-index: 1;
+      animation: floatOrb 10s infinite ease-in-out;
+    }
+    .orb-1 {
+      top: 10%;
+      left: 10%;
+      width: 300px;
+      height: 300px;
+      background: #166534;
+      animation-delay: 0s;
+    }
+    .orb-2 {
+      bottom: 20%;
+      right: 10%;
+      width: 250px;
+      height: 250px;
+      background: #14532d;
+      animation-delay: -5s;
+    }
+    @keyframes floatOrb {
+      0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+      50% { transform: translate(30px, -30px) scale(1.1); opacity: 0.5; }
+    }
+
     .neural-bg {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      z-index: 0;
+      z-index: 2;
     }
     .neural-bg svg {
       width: 100%;
       height: 100%;
     }
-    .node {
-      fill: #22c55e;
-      opacity: 0.6;
-    }
-    .connection {
-      stroke: #22c55e;
-      stroke-width: 1;
-      opacity: 0.2;
-    }
+    .node { fill: #22c55e; opacity: 0.6; }
+    .connection { stroke: #22c55e; stroke-width: 1; opacity: 0.2; }
     
     @keyframes nodePulse {
       0%, 100% { opacity: 0.3; r: 3; }
       50% { opacity: 0.8; r: 5; }
-    }
-    
-    @keyframes glowPulse {
-      0%, 100% { box-shadow: 0 0 30px rgba(34, 197, 94, 0.2), 0 0 60px rgba(34, 197, 94, 0.1); }
-      50% { box-shadow: 0 0 50px rgba(34, 197, 94, 0.3), 0 0 100px rgba(34, 197, 94, 0.2); }
-    }
-    @keyframes textGlow {
-      0%, 100% { text-shadow: 0 0 20px rgba(34, 197, 94, 0.5); }
-      50% { text-shadow: 0 0 40px rgba(34, 197, 94, 0.8), 0 0 60px rgba(34, 197, 94, 0.4); }
-    }
-    @keyframes borderGlow {
-      0%, 100% { border-color: rgba(34, 197, 94, 0.3); }
-      50% { border-color: rgba(34, 197, 94, 0.6); }
-    }
-    @keyframes glowPulseError {
-      0%, 100% { box-shadow: 0 0 30px rgba(220, 38, 38, 0.2), 0 0 60px rgba(220, 38, 38, 0.1); }
-      50% { box-shadow: 0 0 50px rgba(220, 38, 38, 0.3), 0 0 100px rgba(220, 38, 38, 0.2); }
-    }
-    @keyframes borderGlowError {
-      0%, 100% { border-color: rgba(220, 38, 38, 0.3); }
-      50% { border-color: rgba(220, 38, 38, 0.6); }
     }
     @keyframes nodePulseError {
       0%, 100% { opacity: 0.3; transform: scale(1); }
       50% { opacity: 1; transform: scale(1.2); }
     }
 
-    .floating-particles {
-      position: fixed;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-      pointer-events: none;
-    }
-    .particle {
-      position: absolute;
-      width: 4px;
-      height: 4px;
-      background: #22c55e;
-      border-radius: 50%;
-      opacity: 0.4;
-    }
-    @keyframes particleFloat {
-      0% { transform: translateY(100vh) scale(0); opacity: 0; }
-      10% { opacity: 0.6; }
-      90% { opacity: 0.6; }
-      100% { transform: translateY(-100vh) scale(1); opacity: 0; }
-    }
     .content {
       position: relative;
       z-index: 10;
-      text-align: center;
       width: 100%;
+      height: 100%;
       display: flex;
+      align-items: center;
       justify-content: center;
+      padding: 20px;
     }
+
     .card {
-      background: rgba(10, 26, 15, 0.85);
-      backdrop-filter: blur(20px);
+      background: rgba(10, 26, 15, 0.7);
+      backdrop-filter: blur(10px);
       border: 1px solid rgba(34, 197, 94, 0.3);
       border-radius: 24px;
-      padding: 60px 80px;
-      max-width: 600px;
+      padding: 40px;
+      max-width: 500px;
       width: 100%;
-      animation: glowPulse 4s ease-in-out infinite, borderGlow 3s ease-in-out infinite; 
-      transition: all 0.5s ease;
+      text-align: center;
+      box-shadow: 0 0 30px rgba(0,0,0,0.5);
+      transition: all 0.3s ease;
+      
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      max-height: 95vh; 
     }
+
     .card.error-mode {
       background: rgba(26, 10, 10, 0.85);
       border-color: rgba(220, 38, 38, 0.3);
-      animation: glowPulseError 4s ease-in-out infinite, borderGlowError 3s ease-in-out infinite;
     }
 
     .logo {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 12px;
-      margin-bottom: 40px;
+      gap: 10px;
+      margin-bottom: 20px;
     }
-    .logo-icon {
-      width: 48px;
-      height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .logo-icon img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-    }
-    
-    .logo-text {
-      font-size: 24px;
-      font-weight: 700;
-      color: #fff;
-      letter-spacing: -0.5px;
-    }
-    .logo-text span {
-      color: #22c55e;
-    }
+    .logo-icon { width: 40px; height: 40px; }
+    .logo-text { font-size: 22px; font-weight: 700; color: #fff; }
+    .logo-text span { color: #22c55e; }
+
     .error-code {
-      font-size: 140px;
+      font-size: 100px;
       font-weight: 800;
       color: transparent;
       background: linear-gradient(135deg, #22c55e 0%, #4ade80 50%, #22c55e 100%);
-      background-size: 200% 200%;
-      -webkit-background-clip: text;
       background-clip: text;
+      -webkit-background-clip: text;
       line-height: 1;
-      margin-bottom: 20px;
-      animation: textGlow 3s ease-in-out infinite;
+      margin-bottom: 10px;
     }
+
     .error-title {
-      font-size: 28px;
+      font-size: 20px;
       color: #e2e8f0;
       font-weight: 600;
-      margin-bottom: 16px;
+      margin-bottom: 10px;
       word-wrap: break-word;
     }
     .error-message {
-      font-size: 16px;
+      font-size: 14px;
       color: #94a3b8;
-      line-height: 1.7;
-      margin-bottom: 40px;
-      max-width: 400px;
-      margin-left: auto;
-      margin-right: auto;
+      margin-bottom: 20px;
     }
+
     .status-box {
       background: rgba(34, 197, 94, 0.1);
       border: 1px solid rgba(34, 197, 94, 0.2);
       border-radius: 12px;
-      padding: 16px 24px;
-      margin-bottom: 40px;
+      padding: 10px 16px;
+      margin-bottom: 25px;
       display: inline-flex;
       align-items: center;
-      gap: 12px;
-      transition: all 0.3s ease;
-      max-width: 100%;
-      flex-wrap: wrap;
+      gap: 10px;
+      width: 100%;
       justify-content: center;
     }
     .status-box.offline {
       background: rgba(220, 38, 38, 0.1);
-      border: 1px solid rgba(220, 38, 38, 0.2);
+      border-color: rgba(220, 38, 38, 0.2);
     }
-
     .status-dot {
-      width: 10px;
-      height: 10px;
+      width: 8px;
+      height: 8px;
       background: #22c55e;
       border-radius: 50%;
       animation: nodePulse 2s ease-in-out infinite;
-      transition: background 0.3s ease;
-      flex-shrink: 0;
     }
-    .status-dot.offline {
-      background: #dc2626;
-      animation: nodePulseError 1s ease-in-out infinite;
-    }
-
-    .status-text {
-      color: #4ade80;
-      font-size: 14px;
-      font-weight: 500;
-      transition: color 0.3s ease;
-    }
-    .status-text.offline {
-      color: #f87171;
-    }
+    .status-dot.offline { background: #dc2626; animation: nodePulseError 1s infinite; }
+    .status-text { color: #4ade80; font-size: 13px; font-weight: 500; }
+    .status-text.offline { color: #f87171; }
 
     .buttons {
       display: flex;
-      gap: 16px;
+      gap: 12px;
       justify-content: center;
-      flex-wrap: wrap;
+      width: 100%;
     }
     .btn {
-      padding: 14px 32px;
-      border-radius: 12px;
-      font-size: 15px;
+      flex: 1;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 14px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s ease;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      justify-content: center;
+      gap: 6px;
+      white-space: nowrap;
     }
     .btn-primary {
-      background: linear-gradient(135deg, #22c55e, #16a34a);
+      background: #22c55e;
       color: white;
       border: none;
-      box-shadow: 0 4px 20px rgba(34, 197, 94, 0.4);
-    }
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 30px rgba(34, 197, 94, 0.5);
     }
     .btn-secondary {
       background: transparent;
       color: #22c55e;
-      border: 2px solid rgba(34, 197, 94, 0.4);
+      border: 1px solid rgba(34, 197, 94, 0.5);
     }
-    .btn-secondary:hover {
-      background: rgba(34, 197, 94, 0.1);
-      border-color: #22c55e;
-      transform: translateY(-2px);
-    }
-    .btn svg {
-      width: 18px;
-      height: 18px;
-    }
+    .btn svg { width: 16px; height: 16px; }
 
     @media (max-width: 768px) {
+      .neural-bg { display: none; }
+      
       .card {
-        padding: 30px 20px;
-        backdrop-filter: none;
-        background: rgba(13, 30, 20, 0.95);
-        animation: none;
-        box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
-        width: 100%;
+        padding: 25px 20px;
+        background: rgba(13, 30, 20, 0.9);
+        border: 1px solid rgba(34, 197, 94, 0.2);
+        box-shadow: none;
       }
-      .card.error-mode {
-        background: rgba(30, 13, 13, 0.95);
-        animation: none;
-      }
-      .error-code {
-        font-size: 80px;
-        margin-bottom: 10px;
-        text-shadow: none;
-        animation: none;
-      }
-      .error-title {
-        font-size: 22px;
-      }
-      .logo {
-        margin-bottom: 25px;
-      }
-      .logo-icon {
-        width: 32px;
-        height: 32px;
-      }
-      .logo-text {
-        font-size: 20px;
-      }
-      .btn {
-        width: 100%;
-        justify-content: center;
-        padding: 12px 20px;
-      }
-      .buttons {
-        flex-direction: column;
-        gap: 12px;
-      }
-      .status-box {
-        width: 100%;
-        padding: 12px;
-      }
-      .neural-bg {
-        display: none;
-      }
-      .floating-particles {
-        display: none;
-      }
+      .error-code { font-size: 80px; }
+      .logo { margin-bottom: 15px; }
+      .buttons { flex-direction: column; }
+      .btn { width: 100%; }
+      .bg-orb { opacity: 0.3; }
     }
   </style>
 </head>
 <body>
+
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+
   <div class="neural-bg">
     <svg id="neuralNetwork"></svg>
   </div>
-  <div class="floating-particles" id="particles"></div>
-  
+
   <div class="content">
     <div class="card" id="mainCard">
       <div class="logo">
         <div class="logo-icon">
-          <img src="icon.png" alt="FHome AI logo" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.style.display='none'">
+           <img src="icon.png" alt="AI" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.parentElement.style.display='none'">
         </div>
         <div class="logo-text">FHome <span>AI</span></div>
       </div>
+      
       <div class="error-code">404</div>
       
-      <h1 class="error-title" id="errorTitle">Your page not found</h1>
-      
-      <p class="error-message">Try returning home or refreshing the page.</p>
+      <h1 class="error-title" id="errorTitle">Page Not Found</h1>
+      <p class="error-message">The requested page does not exist.</p>
       
       <div class="status-box" id="statusBox">
         <div class="status-dot" id="statusDot"></div>
@@ -350,68 +261,56 @@
       <div class="buttons">
         <a href="https://fhai.pp.ua/" class="btn btn-primary">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-          Back to Home
+          Home
         </a>
-        
         <a href="#" class="btn btn-secondary" onclick="forceReload(event)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
           Reload
         </a>
       </div>
-      
     </div>
   </div>
+
   <script>
     const isMobile = window.innerWidth < 768;
 
     function updateErrorPath() {
-        const currentPath = window.location.pathname;
         const titleElement = document.getElementById('errorTitle');
-        if (currentPath && currentPath !== '/') {
-            let displayPath = currentPath;
-            if(isMobile && displayPath.length > 20) {
-              displayPath = displayPath.substring(0, 17) + '...';
-            }
-            titleElement.textContent = `Your page: ${displayPath}, not found`;
+        const path = window.location.pathname;
+        
+        if (path && path !== '/') {
+            const displayPath = path.length > 15 ? path.substring(0, 15) + '...' : path;
+            titleElement.textContent = `Error: ${displayPath}`;
         } else {
-            titleElement.textContent = `Page not found`;
+            titleElement.textContent = `Page Not Found`;
         }
     }
 
     async function checkSystemStatus() {
-    const statusBox = document.getElementById('statusBox');
-    const statusDot = document.getElementById('statusDot');
-    const statusText = document.getElementById('statusText');
-    const mainCard = document.getElementById('mainCard');
+        const box = document.getElementById('statusBox');
+        const dot = document.getElementById('statusDot');
+        const txt = document.getElementById('statusText');
+        const card = document.getElementById('mainCard');
 
-    try {
-        const r = await fetch("https://fhai.pp.ua/favicon.ico?" + Date.now(), {
-            cache: "no-store"
-        });
+        try {
+            // Fake check or real check
+            const r = await fetch("https://fhai.pp.ua/favicon.ico?" + Date.now(), { cache: "no-store" });
+            if (!r.ok) throw new Error("Err");
 
-        if (!r.ok) throw new Error("Bad status");
-
-        statusBox.classList.remove('offline');
-        statusDot.classList.remove('offline');
-        statusText.classList.remove('offline');
-        mainCard.classList.remove('error-mode');
-
-        statusText.textContent = "The FHome AI server is working properly.";
-
-    } catch (err) {
-        statusBox.classList.add('offline');
-        statusDot.classList.add('offline');
-        statusText.classList.add('offline');
-        mainCard.classList.add('error-mode');
-
-        statusText.textContent = "FHome AI servers are not working properly.";
+            box.classList.remove('offline');
+            dot.classList.remove('offline');
+            txt.classList.remove('offline');
+            card.classList.remove('error-mode');
+            txt.textContent = "All Systems Operational";
+        } catch (err) {
+            box.classList.add('offline');
+            dot.classList.add('offline');
+            txt.classList.add('offline');
+            card.classList.add('error-mode');
+            txt.textContent = "System Offline";
+        }
     }
-}
 
-    checkSystemStatus();
-
-    setInterval(checkSystemStatus, 10000);
-    
     function forceReload(e) {
         e.preventDefault();
         location.reload();
@@ -421,85 +320,45 @@
         const svg = document.getElementById('neuralNetwork');
         const width = window.innerWidth;
         const height = window.innerHeight;
-        
         const nodes = [];
-        const nodeCount = 60;
         
-        function getDimensions() {
-          return { width: window.innerWidth, height: window.innerHeight };
-        }
-        
-        for (let i = 0; i < nodeCount; i++) {
+        for (let i = 0; i < 40; i++) {
           nodes.push({
             x: Math.random() * width,
             y: Math.random() * height,
-            vx: (Math.random() - 0.5) * 0.5,
-            vy: (Math.random() - 0.5) * 0.5
+            vx: (Math.random() - 0.5) * 0.4,
+            vy: (Math.random() - 0.5) * 0.4
           });
         }
-        function createConnections() {
-          let connectionsHTML = '';
-          for (let i = 0; i < nodes.length; i++) {
-            for (let j = i + 1; j < nodes.length; j++) {
-              const dx = nodes[i].x - nodes[j].x;
-              const dy = nodes[i].y - nodes[j].y;
-              const dist = Math.sqrt(dx * dx + dy * dy);
-              if (dist < 200) {
-                const opacity = (1 - dist / 200) * 0.3;
-                connectionsHTML += `<line class="connection" x1="${nodes[i].x}" y1="${nodes[i].y}" x2="${nodes[j].x}" y2="${nodes[j].y}" style="opacity: ${opacity}"/>`;
-              }
-            }
-          }
-          return connectionsHTML;
-        }
-        function createNodes() {
-          return nodes.map((node, i) => {
-            const delay = Math.random() * 3;
-            return `<circle class="node" cx="${node.x}" cy="${node.y}" r="3" style="animation: nodePulse ${2 + Math.random() * 2}s ease-in-out ${delay}s infinite"/>`;
-          }).join('');
-        }
-        function updateNetwork() {
-          const { width, height } = getDimensions();
-          nodes.forEach(node => {
-            node.x += node.vx;
-            node.y += node.vy;
-            if (node.x < 0 || node.x > width) node.vx *= -1;
-            if (node.y < 0 || node.y > height) node.vy *= -1;
-          });
-          svg.innerHTML = createConnections() + createNodes();
-          requestAnimationFrame(updateNetwork);
-        }
 
-        const particlesContainer = document.getElementById('particles');
-    
-        function createParticle() {
-          const particle = document.createElement('div');
-          particle.className = 'particle';
-          particle.style.left = Math.random() * 100 + '%';
-          particle.style.animationDuration = (8 + Math.random() * 8) + 's';
-          particle.style.animationDelay = Math.random() * 5 + 's';
-          particle.style.animation = `particleFloat ${8 + Math.random() * 8}s linear infinite`;
-          particlesContainer.appendChild(particle);
-          
-          if (particlesContainer.children.length > 30) {
-            particlesContainer.removeChild(particlesContainer.firstChild);
-          }
-        }
+        function animate() {
+            let html = '';
+            nodes.forEach((node, i) => {
+                node.x += node.vx;
+                node.y += node.vy;
+                if(node.x < 0 || node.x > width) node.vx *= -1;
+                if(node.y < 0 || node.y > height) node.vy *= -1;
+                
+                html += `<circle class="node" cx="${node.x}" cy="${node.y}" r="3"/>`;
 
-        updateNetwork();
-        for (let i = 0; i < 20; i++) {
-            setTimeout(createParticle, i * 200);
+                for(let j=i+1; j<nodes.length; j++){
+                    const dx = nodes[i].x - nodes[j].x;
+                    const dy = nodes[i].y - nodes[j].y;
+                    const dist = dx*dx + dy*dy;
+                    if(dist < 20000) {
+                        html += `<line class="connection" x1="${node.x}" y1="${node.y}" x2="${nodes[j].x}" y2="${nodes[j].y}"/>`;
+                    }
+                }
+            });
+            svg.innerHTML = html;
+            requestAnimationFrame(animate);
         }
-        setInterval(createParticle, 800);
+        animate();
     }
-    
-    window.onload = function () {
-      updateErrorPath();
-      checkSystemStatus();
-    }
-    
-    window.addEventListener('resize', () => {
-    });
+
+    updateErrorPath();
+    checkSystemStatus();
+    setInterval(checkSystemStatus, 10000);
 
   </script>
 </body>
