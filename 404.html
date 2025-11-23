@@ -350,17 +350,21 @@
         if (!r.ok) throw new Error("Bad status");
 
         statusBox.classList.remove('offline');
+        statusDot.classList.remove('offline');
+        statusText.classList.remove('offline');
+        mainCard.classList.remove('error-mode');
+
         statusText.textContent = "The FHome AI server is working properly.";
 
     } catch (err) {
         statusBox.classList.add('offline');
+        statusDot.classList.add('offline');
         statusText.classList.add('offline');
         mainCard.classList.add('error-mode');
 
         statusText.textContent = "FHome AI servers are not working properly.";
     }
 }
-
     function forceReload(e) {
         e.preventDefault();
         location.reload();
