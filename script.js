@@ -244,9 +244,17 @@ function applySettings() {
     }
 }
 
+function autoSave() {
+    saveToCookie();
+}
+
 function openSettings() {
     const modal = document.getElementById('settingsModal');
     if (modal) modal.classList.add('active');
+}
+
+function autoSave() {
+    saveToCookie();
 }
 
 function closeSettings() {
@@ -264,6 +272,10 @@ function closeSettings() {
     if (modal) modal.classList.remove('active');
 }
 
+function autoSave() {
+    saveToCookie();
+}
+
 function openChatManager() {
     const managerModal = document.getElementById('chatManagerModal');
     if (managerModal) managerModal.classList.add('active');
@@ -273,6 +285,10 @@ function openChatManager() {
 function closeChatManager() {
     const managerModal = document.getElementById('chatManagerModal');
     if (managerModal) managerModal.classList.remove('active');
+}
+
+function autoSave() {
+    saveToCookie();
 }
 
 function createNewChat() {
@@ -290,6 +306,10 @@ function createNewChat() {
     renderChatManagerChats();
 }
 
+function autoSave() {
+    saveToCookie();
+}
+
 function selectChat(chatId) {
     currentChatId = chatId;
     renderChats();
@@ -302,6 +322,10 @@ function selectChat(chatId) {
         sidebar.classList.remove('active');
         document.body.style.overflow = '';
     }
+}
+
+function autoSave() {
+    saveToCookie();
 }
 
 function deleteChat(chatId, event) {
@@ -318,6 +342,10 @@ function deleteChat(chatId, event) {
     }
 }
 
+function autoSave() {
+    saveToCookie();
+}
+
 function renameChat(chatId, event) {
     if (event) event.stopPropagation();
     const chat = chats.find(c => c.id === chatId);
@@ -329,6 +357,10 @@ function renameChat(chatId, event) {
         renderMessages();
         renderChatManagerChats();
     }
+}
+
+function autoSave() {
+    saveToCookie();
 }
 
 function renderChats() {
@@ -345,6 +377,10 @@ function renderChats() {
     `).join('');
 }
 
+function autoSave() {
+    saveToCookie();
+}
+
 function renderChatManagerChats() {
     const managerList = document.getElementById('chatManagerChatsList');
     if (!managerList) return;
@@ -357,6 +393,10 @@ function renderChatManagerChats() {
             </div>
         </div>
     `).join('');
+}
+
+function autoSave() {
+    saveToCookie();
 }
 
 function renderMessages() {
@@ -392,6 +432,10 @@ function renderMessages() {
     container.scrollTop = container.scrollHeight;
 }
 
+function autoSave() {
+    saveToCookie();
+}
+
 const MODES = ['mind', 'dev', 'teacher', 'short'];
 let activeMode = null;
 let tooltipTimeout;
@@ -405,6 +449,10 @@ function syncModeUI() {
         const btnMode = btn.dataset.mode;
         btn.classList.toggle('active', btnMode === currentMode);
     });
+}
+
+function autoSave() {
+    saveToCookie();
 }
 
 function setMode(mode) {
@@ -433,6 +481,10 @@ function setMode(mode) {
     syncModeUI();
 }
 
+function autoSave() {
+    saveToCookie();
+}
+
 function prepareMessageForAI() {
     let message = document.getElementById("messageInput").value.trim();
 
@@ -455,6 +507,10 @@ function prepareMessageForAI() {
 
 function updateMessageLimitUI() {
     updateDailyUI();
+}
+
+function autoSave() {
+    saveToCookie();
 }
 
 async function sendMessage() {
@@ -490,6 +546,7 @@ if (!canSendDaily()) {
     syncModeUI();
     renderChats();
     renderMessages();
+    saveToCookie();
 
     const container = document.getElementById('messagesContainer');
 
@@ -512,6 +569,7 @@ if (!canSendDaily()) {
     try {
 increaseDailyCounter();
 updateDailyUI();
+saveToCookie();
 
 const response = await fetch(WORKER_URL, {
     method: 'POST',
@@ -541,6 +599,7 @@ const response = await fetch(WORKER_URL, {
         typingIndicator.remove();
         chat.messages.push({ role: 'ai', content: `Sorry, I couldn't connect to the AI service. Details: ${error.message}` });
         renderMessages();
+        saveToCookie();
     }
 
 }
@@ -555,6 +614,7 @@ function handleKeyPress(event) {
         } else {
             event.preventDefault();
             sendMessage();
+            saveToCookie();
         }
     }
 }
@@ -569,6 +629,10 @@ function toggleSidebar() {
     } else {
         document.body.style.overflow = '';
     }
+}
+
+function autoSave() {
+    saveToCookie();
 }
 
 document.addEventListener('click', function(e){
@@ -591,6 +655,10 @@ document.addEventListener('click', function(e){
         hideTooltip();
     }
 });
+
+function autoSave() {
+    saveToCookie();
+}
 
 function getTooltipText(mode) {
     switch (mode) {
@@ -627,12 +695,20 @@ function showTooltip(element, text) {
     }
 }
 
+function autoSave() {
+    saveToCookie();
+}
+
 function hideTooltip() {
     const tooltip = document.getElementById('tooltip');
     if (tooltip) {
         tooltip.style.display = 'none';
         clearTimeout(tooltipTimeout);
     }
+}
+
+function autoSave() {
+    saveToCookie();
 }
 
 function manageMobileSettingsButton() {
@@ -647,6 +723,10 @@ function manageMobileSettingsButton() {
             textSpan.style.display = '';
         }
     }
+}
+
+function autoSave() {
+    saveToCookie();
 }
 
 function setupMobileUI() {
@@ -678,6 +758,7 @@ function setupMobileUI() {
             clone.onclick = function(e) {
                 e.stopPropagation();
                 openSettings();
+                saveToCookie();
             };
             
             if (!clone.querySelector('span')) {
@@ -687,8 +768,13 @@ function setupMobileUI() {
             
             chatHeader.appendChild(clone);
             manageMobileSettingsButton();
+            saveToCookie();
         }
     }
+}
+
+function autoSave() {
+    saveToCookie();
 }
 
 function refreshMobileHeaderTitle() {
@@ -696,6 +782,10 @@ function refreshMobileHeaderTitle() {
     const titleEl = chatHeader ? chatHeader.querySelector('.chat-title-mobile') : null;
     const chat = chats.find(c => c.id === currentChatId);
     if (titleEl) titleEl.textContent = chat ? chat.title : 'New Chat';
+}
+
+function autoSave() {
+    saveToCookie();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -726,13 +816,16 @@ document.addEventListener('DOMContentLoaded', () => {
     loadFromCookie();
     renderChats();
     renderMessages();
+    saveToCookie();
     
     if (chats.length === 0) {
         createNewChat();
+        saveToCookie();
     }
 
 setupMobileUI();
 refreshMobileHeaderTitle();
+saveToCookie();
 
 const mobileChatBtn = document.querySelector('.chat-header .toggle-sidebar-btn');
 if (mobileChatBtn) {
@@ -772,17 +865,23 @@ const messageInput = document.getElementById('messageInput');
             if (window.innerWidth > 768) {
                 clearTimeout(tooltipTimeout);
                 hideTooltip();
+                saveToCookie();
             }
         });
     });
     
     syncModeUI();
+    saveToCookie();
     
     const toggleSidebarBtn = document.querySelector('.chat-header .toggle-sidebar-btn');
         if (toggleSidebarBtn) {
         toggleSidebarBtn.onclick = openChatModal;
        }
 });
+
+function autoSave() {
+    saveToCookie();
+}
 
 function openChatModal() {
     const modal = document.getElementById('chatModal');
@@ -835,10 +934,18 @@ function openChatModal() {
     });
 }
 
+function autoSave() {
+    saveToCookie();
+}
+
 function refreshChatModal() {
     if (document.getElementById('chatModal')?.classList.contains('active')) {
         openChatModal();
     }
+}
+
+function autoSave() {
+    saveToCookie();
 }
 
 function closeChatModal() {
@@ -846,11 +953,19 @@ function closeChatModal() {
     modal.classList.remove('active');
 }
 
+function autoSave() {
+    saveToCookie();
+}
+
 document.getElementById('chatModal').addEventListener('click', (e) => {
     if (e.target.id === 'chatModal') {
         closeChatModal();
     }
 });
+
+function autoSave() {
+    saveToCookie();
+}
 
 function createNewChatFromHeader() {
     const chat = {
@@ -878,6 +993,10 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+function autoSave() {
+    saveToCookie();
+}
+
 (function(){
     const gaScript = document.createElement('script');
     gaScript.async = true;
@@ -892,6 +1011,10 @@ if ('serviceWorker' in navigator) {
         gtag('config', 'G-JGT0TXWH5W');
     };
 })();
+
+function autoSave() {
+    saveToCookie();
+}
 
 window.selectChat = selectChat;
 window.deleteChat = deleteChat;
