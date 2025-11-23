@@ -365,6 +365,11 @@
         statusText.textContent = "FHome AI servers are not working properly.";
     }
 }
+
+    checkSystemStatus();
+
+    setInterval(checkSystemStatus, 10000);
+    
     function forceReload(e) {
         e.preventDefault();
         location.reload();
