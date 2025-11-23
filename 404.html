@@ -337,31 +337,29 @@
     }
 
     async function checkSystemStatus() {
-        const statusBox = document.getElementById('statusBox');
-        const statusDot = document.getElementById('statusDot');
-        const statusText = document.getElementById('statusText');
-        const mainCard = document.getElementById('mainCard');
+    const statusBox = document.getElementById('statusBox');
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+    const mainCard = document.getElementById('mainCard');
 
-        const targetUrl = 'https://fhai.pp.ua/';
+    try {
+        const r = await fetch("https://fhai.pp.ua/favicon.ico?" + Date.now(), {
+            cache: "no-store"
+        });
 
-        try {
-            await fetch(targetUrl, { method: 'HEAD', mode: 'no-cors', cache: 'no-store' });
-            
-            statusBox.classList.remove('offline');
-            statusDot.classList.remove('offline');
-            statusText.classList.remove('offline');
-            mainCard.classList.remove('error-mode');
-            statusText.textContent = 'The FHome AI server is working properly.';
-            
-        } catch (error) {
-            console.error('System Check Failed:', error);
-            statusBox.classList.add('offline');
-            statusDot.classList.add('offline');
-            statusText.classList.add('offline');
-            mainCard.classList.add('error-mode');
-            statusText.textContent = 'FHome AI servers are not working properly.';
-        }
+        if (!r.ok) throw new Error("Bad status");
+
+        statusBox.classList.remove('offline');
+        statusText.textContent = "The FHome AI server is working properly.";
+
+    } catch (err) {
+        statusBox.classList.add('offline');
+        statusText.classList.add('offline');
+        mainCard.classList.add('error-mode');
+
+        statusText.textContent = "FHome AI servers are not working properly.";
     }
+}
 
     function forceReload(e) {
         e.preventDefault();
