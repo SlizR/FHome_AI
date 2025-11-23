@@ -219,4 +219,4 @@ Full license is available in the `LICENSE` file.
 
 **FHome AI®** was built to teach — not to replace industrial AI tools — and shows how surprisingly small and understandable an AI chat interface can be.
 
-If you use or modify it, just keep the attribution lines (as required by the **Apache 2.0 license**) and enjoy building cool things 🚀 (Latest stable version: **934.stable, We've added auto-updates for PWA apps, so you don't need to reinstall them for new versions)**)
+If you use or modify it, just keep the attribution lines (as required by the **Apache 2.0 license**) and enjoy building cool things 🚀 (Latest stable version: **935.stable, We've added 39 cookie storage options, so you won't lose your data when you refresh the page😏**)
