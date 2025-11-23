@@ -586,11 +586,14 @@ const response = await fetch(WORKER_URL, {
         if (data.candidates && data.candidates[0]) {
             const aiMessageContent = data.candidates[0].content.parts[0].text;
             chat.messages.push({ role: 'ai', content: aiMessageContent });
+            saveToCookie();
         } else if (data.error) {
             const errorMessage = `AI Response Error: ${data.error.message || JSON.stringify(data)}`;
             chat.messages.push({ role: 'ai', content: `Sorry, I encountered an error processing your request. Details: ${errorMessage}` });
+            saveToCookie();
         } else {
             chat.messages.push({ role: 'ai', content: 'Sorry, I encountered an error processing your request (AI response failed).' });
+            saveToCookie();
         }
 
         saveToCookie();
