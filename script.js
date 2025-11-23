@@ -166,10 +166,7 @@ function parseMarkdownSafe(text) {
             
             content = escapeHTML(content);
 
-            html += content
-    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+html += content
     .replace(/\*\*(.+?)\*\*/gs, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/gs, '<em>$1</em>')
     .replace(/`([^`]+)`/g, '<code>$1</code>')
