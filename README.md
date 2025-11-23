@@ -220,3 +220,19 @@ Full license is available in the `LICENSE` file.
 **FHome AI®** was built to teach — not to replace industrial AI tools — and shows how surprisingly small and understandable an AI chat interface can be.
 
 If you use or modify it, just keep the attribution lines (as required by the **Apache 2.0 license**) and enjoy building cool things 🚀 (Latest stable version: **935.stable, We've added 39 cookie storage options, so you won't lose your data when you refresh the page😏**)
+
+# Versions
+
+- Latest **version of project**: **v935.stable**
+- Latest **stable** version: **v935.stable**
+- **Previous** version: **v934.stable**
+- Latest **alpha** version: **v902.alpha**
+- Latest **LTS** version: **v901.latest**
+- Latest **test** version: **v920.testm**
+- 
+- **First** version: **n.a.start.gbl.game_doom**
+
+---
+
+### Warning!
+The first version of the project was a **game with AI**, not just AI. The project was changed later, but this version **(the first one)** was private and cannot be accessed. (Game name: **Cardoom**, a light version of a similar game to **Doom**, can be **launched using 15 bytes of information and a handler**) **The game is no longer available and has been removed.**
