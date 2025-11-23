@@ -253,10 +253,6 @@ function openSettings() {
     if (modal) modal.classList.add('active');
 }
 
-function autoSave() {
-    saveToCookie();
-}
-
 function closeSettings() {
     settings.userName = document.getElementById('userNameInput').value || 'User';
     settings.userAvatar = document.getElementById('userAvatarInput').value || settings.userAvatar;
@@ -272,10 +268,6 @@ function closeSettings() {
     if (modal) modal.classList.remove('active');
 }
 
-function autoSave() {
-    saveToCookie();
-}
-
 function openChatManager() {
     const managerModal = document.getElementById('chatManagerModal');
     if (managerModal) managerModal.classList.add('active');
@@ -285,10 +277,6 @@ function openChatManager() {
 function closeChatManager() {
     const managerModal = document.getElementById('chatManagerModal');
     if (managerModal) managerModal.classList.remove('active');
-}
-
-function autoSave() {
-    saveToCookie();
 }
 
 function createNewChat() {
@@ -342,10 +330,6 @@ function deleteChat(chatId, event) {
     }
 }
 
-function autoSave() {
-    saveToCookie();
-}
-
 function renameChat(chatId, event) {
     if (event) event.stopPropagation();
     const chat = chats.find(c => c.id === chatId);
@@ -357,10 +341,6 @@ function renameChat(chatId, event) {
         renderMessages();
         renderChatManagerChats();
     }
-}
-
-function autoSave() {
-    saveToCookie();
 }
 
 function renderChats() {
@@ -377,10 +357,6 @@ function renderChats() {
     `).join('');
 }
 
-function autoSave() {
-    saveToCookie();
-}
-
 function renderChatManagerChats() {
     const managerList = document.getElementById('chatManagerChatsList');
     if (!managerList) return;
@@ -393,10 +369,6 @@ function renderChatManagerChats() {
             </div>
         </div>
     `).join('');
-}
-
-function autoSave() {
-    saveToCookie();
 }
 
 function renderMessages() {
@@ -451,10 +423,6 @@ function syncModeUI() {
     });
 }
 
-function autoSave() {
-    saveToCookie();
-}
-
 function setMode(mode) {
     const input = document.getElementById("messageInput");
     const modeMatch = input.value.trim().match(/^\/(\w+)\b/);
@@ -481,10 +449,6 @@ function setMode(mode) {
     syncModeUI();
 }
 
-function autoSave() {
-    saveToCookie();
-}
-
 function prepareMessageForAI() {
     let message = document.getElementById("messageInput").value.trim();
 
@@ -507,10 +471,6 @@ function prepareMessageForAI() {
 
 function updateMessageLimitUI() {
     updateDailyUI();
-}
-
-function autoSave() {
-    saveToCookie();
 }
 
 async function sendMessage() {
@@ -617,7 +577,6 @@ function handleKeyPress(event) {
         } else {
             event.preventDefault();
             sendMessage();
-            saveToCookie();
         }
     }
 }
@@ -632,10 +591,6 @@ function toggleSidebar() {
     } else {
         document.body.style.overflow = '';
     }
-}
-
-function autoSave() {
-    saveToCookie();
 }
 
 document.addEventListener('click', function(e){
@@ -658,10 +613,6 @@ document.addEventListener('click', function(e){
         hideTooltip();
     }
 });
-
-function autoSave() {
-    saveToCookie();
-}
 
 function getTooltipText(mode) {
     switch (mode) {
@@ -698,20 +649,12 @@ function showTooltip(element, text) {
     }
 }
 
-function autoSave() {
-    saveToCookie();
-}
-
 function hideTooltip() {
     const tooltip = document.getElementById('tooltip');
     if (tooltip) {
         tooltip.style.display = 'none';
         clearTimeout(tooltipTimeout);
     }
-}
-
-function autoSave() {
-    saveToCookie();
 }
 
 function manageMobileSettingsButton() {
@@ -726,10 +669,6 @@ function manageMobileSettingsButton() {
             textSpan.style.display = '';
         }
     }
-}
-
-function autoSave() {
-    saveToCookie();
 }
 
 function setupMobileUI() {
@@ -761,7 +700,6 @@ function setupMobileUI() {
             clone.onclick = function(e) {
                 e.stopPropagation();
                 openSettings();
-                saveToCookie();
             };
             
             if (!clone.querySelector('span')) {
@@ -771,13 +709,8 @@ function setupMobileUI() {
             
             chatHeader.appendChild(clone);
             manageMobileSettingsButton();
-            saveToCookie();
         }
     }
-}
-
-function autoSave() {
-    saveToCookie();
 }
 
 function refreshMobileHeaderTitle() {
@@ -785,10 +718,6 @@ function refreshMobileHeaderTitle() {
     const titleEl = chatHeader ? chatHeader.querySelector('.chat-title-mobile') : null;
     const chat = chats.find(c => c.id === currentChatId);
     if (titleEl) titleEl.textContent = chat ? chat.title : 'New Chat';
-}
-
-function autoSave() {
-    saveToCookie();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -819,16 +748,13 @@ document.addEventListener('DOMContentLoaded', () => {
     loadFromCookie();
     renderChats();
     renderMessages();
-    saveToCookie();
     
     if (chats.length === 0) {
         createNewChat();
-        saveToCookie();
     }
 
 setupMobileUI();
 refreshMobileHeaderTitle();
-saveToCookie();
 
 const mobileChatBtn = document.querySelector('.chat-header .toggle-sidebar-btn');
 if (mobileChatBtn) {
@@ -868,23 +794,17 @@ const messageInput = document.getElementById('messageInput');
             if (window.innerWidth > 768) {
                 clearTimeout(tooltipTimeout);
                 hideTooltip();
-                saveToCookie();
             }
         });
     });
     
     syncModeUI();
-    saveToCookie();
     
     const toggleSidebarBtn = document.querySelector('.chat-header .toggle-sidebar-btn');
         if (toggleSidebarBtn) {
         toggleSidebarBtn.onclick = openChatModal;
        }
 });
-
-function autoSave() {
-    saveToCookie();
-}
 
 function openChatModal() {
     const modal = document.getElementById('chatModal');
@@ -937,18 +857,10 @@ function openChatModal() {
     });
 }
 
-function autoSave() {
-    saveToCookie();
-}
-
 function refreshChatModal() {
     if (document.getElementById('chatModal')?.classList.contains('active')) {
         openChatModal();
     }
-}
-
-function autoSave() {
-    saveToCookie();
 }
 
 function closeChatModal() {
@@ -956,19 +868,11 @@ function closeChatModal() {
     modal.classList.remove('active');
 }
 
-function autoSave() {
-    saveToCookie();
-}
-
 document.getElementById('chatModal').addEventListener('click', (e) => {
     if (e.target.id === 'chatModal') {
         closeChatModal();
     }
 });
-
-function autoSave() {
-    saveToCookie();
-}
 
 function createNewChatFromHeader() {
     const chat = {
@@ -980,7 +884,6 @@ function createNewChatFromHeader() {
     chats.unshift(chat);
     currentChatId = chat.id;
 
-    saveToCookie();
     renderChats();
     renderMessages();
     refreshMobileHeaderTitle();
@@ -994,10 +897,6 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     window.location.reload();
   });
-}
-
-function autoSave() {
-    saveToCookie();
 }
 
 (function(){
@@ -1014,10 +913,6 @@ function autoSave() {
         gtag('config', 'G-JGT0TXWH5W');
     };
 })();
-
-function autoSave() {
-    saveToCookie();
-}
 
 window.selectChat = selectChat;
 window.deleteChat = deleteChat;
