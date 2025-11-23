@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fhomeai-cache-v2';
+const CACHE_NAME = 'fhomeai-cache-v3';
 const urlsToCache = [
   '/',
   'index.html',
