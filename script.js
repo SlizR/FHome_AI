@@ -869,10 +869,12 @@ function createNewChatFromHeader() {
 }
 
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('service-worker.js')
-      .then(reg => console.log('ServiceWorker registered', reg))
-      .catch(err => console.log('ServiceWorker registration failed', err));
+  navigator.serviceWorker.register('service-worker.js')
+    .then(reg => console.log('ServiceWorker registered', reg))
+    .catch(err => console.error('ServiceWorker registration failed', err));
+
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    window.location.reload();
   });
 }
 
