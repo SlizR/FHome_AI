@@ -1,3 +1,5 @@
+importScripts('https://cdn.onesignal.com/sdks/OneSignalSDKWorker.js');
+
 const CACHE_NAME = 'fhomeai-cache-v4';
 const urlsToCache = [
   '/',
