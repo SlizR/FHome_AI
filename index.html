@@ -165,5 +165,21 @@
 
   gtag('config', 'G-XRWRWPG4M0');
 </script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
+  const firebaseConfig = {
+    apiKey: "AIzaSyCPKqKHbqyEnb_BcylX7Ek9impkEEffRqA",
+    authDomain: "fhome-ai.firebaseapp.com",
+    projectId: "fhome-ai",
+    storageBucket: "fhome-ai.firebasestorage.app",
+    messagingSenderId: "916145561530",
+    appId: "1:916145561530:web:e15aa84853410c17424783",
+    measurementId: "G-YYDY7TNYGD"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
 </body>
 </html>
