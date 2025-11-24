@@ -1,3 +1,5 @@
+// SDPT-DTH12.load.start.n.os.start-v15
+
 importScripts('https://cdn.onesignal.com/sdks/OneSignalSDKWorker.js');
 
 const CACHE_NAME = 'fhomeai-cache-v4';
