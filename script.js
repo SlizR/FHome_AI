@@ -890,7 +890,7 @@ function createNewChatFromHeader() {
 }
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('service-worker.js')
+  navigator.serviceWorker.register('OneSignalSDKWorker.js')
     .then(reg => console.log('ServiceWorker registered', reg))
     .catch(err => console.error('ServiceWorker registration failed', err));
 
