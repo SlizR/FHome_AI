@@ -1,6 +1,6 @@
-importScripts('https://pushpad.xyz/service-worker.js');
+importScripts("https://cdn.pushalert.co/sw-86260.js");
 
-const CACHE_NAME = 'fhomeai-cache-v5';
+const CACHE_NAME = 'fhomeai-cache-v6';
 const urlsToCache = [
   '/',
   'index.html',
