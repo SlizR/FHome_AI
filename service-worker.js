@@ -1,8 +1,6 @@
-// SDPT-DTH12.load.start.n.os.start-v15
+importScripts('https://pushpad.xyz/service-worker.js');
 
-importScripts('https://cdn.onesignal.com/sdks/OneSignalSDKWorker.js');
-
-const CACHE_NAME = 'fhomeai-cache-v4';
+const CACHE_NAME = 'fhomeai-cache-v5';
 const urlsToCache = [
   '/',
   'index.html',
