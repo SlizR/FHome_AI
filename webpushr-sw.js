@@ -1,6 +1,6 @@
-importScripts("https://cdn.pushalert.co/sw-86260.js");
+importScripts('https://cdn.webpushr.com/sw-server.min.js');
 
-const CACHE_NAME = 'fhomeai-cache-v6';
+const CACHE_NAME = 'fhomeai-cache-v7';
 const urlsToCache = [
   '/',
   'index.html',
