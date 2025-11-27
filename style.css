@@ -946,3 +946,36 @@ body {
 .modal-content {
     max-width: 460px;
 }
+
+.daily-counter {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2ea67d, #34d399);
+    box-shadow: 0 4px 15px rgba(46, 166, 125, 0.3);
+    color: white;
+    font-weight: 700;
+    font-size: 17px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 18px auto 10px;
+    cursor: default;
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+.daily-counter:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(46, 166, 125, 0.4);
+}
+
+.daily-counter.limit-reached {
+    background: linear-gradient(135deg, #d9534f, #ff6b6b);
+    box-shadow: 0 4px 15px rgba(255, 80, 80, 0.35);
+}
+
+.daily-counter.limit-reached:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 22px rgba(255, 80, 80, 0.5);
+}
