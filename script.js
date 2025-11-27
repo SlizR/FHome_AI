@@ -5,7 +5,7 @@ let chats = [];
 let currentChatId = null;
 let settings = {
     userName: 'User',
-    userAvatar: 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Ccircle cx=\'50\' cy=\'50\' r=\'50\' fill=\'%2334d399\'/%3E%3Ctext x=\'50\' y=\'50\' font-size=\'40\' text-anchor=\'middle\' dy=\'.3em\' fill=\'white\' font-family=\'Arial\'%3EU%3C/text%3E%3C/svg%3E',
+    userAvatar: 'https://fhai.pp.ua/Assets/user.png',
     borderRadius: 18,
     userAge: '',
     userHobby: '',
@@ -121,17 +121,9 @@ function copyCode(button) {
         }, 1500);
     }).catch(err => {
         console.error('Failed to copy text: ', err);
-        const textarea = document.createElement('textarea');
-        textarea.value = textToCopy;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-
-        const originalText = button.textContent;
-        button.textContent = 'Copied!';
+        button.textContent = 'Error!'; 
         setTimeout(() => {
-            button.textContent = originalText;
+            button.textContent = 'Copy'; 
         }, 1500);
     });
 }
@@ -184,6 +176,7 @@ function loadFromCookie() {
             const parsed = JSON.parse(data);
             chats = parsed.chats || [];
             settings = {...settings, ...parsed.settings};
+            currentChatId = parsed.currentChatId || (chats.length > 0 ? chats[0].id : null);
             applySettings();
         } catch (e) {
             console.error('Error loading data:', e);
@@ -192,7 +185,7 @@ function loadFromCookie() {
 }
 
 function saveToCookie() {
-    const data = JSON.stringify({ chats, settings });
+    const data = JSON.stringify({ chats, settings, currentChatId });
     setCookie('fhomeai_data', data, 365);
 }
 
@@ -244,10 +237,6 @@ function applySettings() {
     }
 }
 
-function autoSave() {
-    saveToCookie();
-}
-
 function openSettings() {
     const modal = document.getElementById('settingsModal');
     if (modal) modal.classList.add('active');
@@ -294,12 +283,9 @@ function createNewChat() {
     renderChatManagerChats();
 }
 
-function autoSave() {
-    saveToCookie();
-}
-
 function selectChat(chatId) {
     currentChatId = chatId;
+    saveToCookie();
     renderChats();
     renderMessages();
     renderChatManagerChats();
@@ -310,10 +296,6 @@ function selectChat(chatId) {
         sidebar.classList.remove('active');
         document.body.style.overflow = '';
     }
-}
-
-function autoSave() {
-    saveToCookie();
 }
 
 function deleteChat(chatId, event) {
@@ -327,6 +309,9 @@ function deleteChat(chatId, event) {
         renderChats();
         renderMessages();
         renderChatManagerChats();
+        if (chats.length === 0) {
+            createNewChat(); 
+        }
     }
 }
 
@@ -396,16 +381,11 @@ function renderMessages() {
     container.innerHTML = chat.messages.map(msg => `
         <div class="message ${msg.role}">
             <img src="${msg.role === 'user' ? settings.userAvatar : 'icon.png'}" 
-                 class="message-avatar" 
-                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Ccircle cx=\'50\' cy=\'50\' r=\'50\' fill=\'%232ea67d\'/%3E%3Ctext x=\'50\' y=\'50\' font-size=\'40\' text-anchor=\'middle\' dy=\'.3em\' fill=\'white\' font-family=\'Arial\'%3EF%3C/text%3E%3C/svg%3E'">
+                 class="message-avatar">
             <div class="message-content">${parseMarkdownSafe(msg.content)}</div>
         </div>
     `).join('');
     container.scrollTop = container.scrollHeight;
-}
-
-function autoSave() {
-    saveToCookie();
 }
 
 const MODES = ['mind', 'dev', 'teacher', 'short'];
@@ -527,44 +507,41 @@ if (!canSendDaily()) {
     sendBtn.disabled = true;
 
     try {
-increaseDailyCounter();
-updateDailyUI();
-saveToCookie();
+        increaseDailyCounter();
+        updateDailyUI();
 
-const response = await fetch(WORKER_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-        messages: chat.messages,
-        settings: settings
-    })
-});
+        const response = await fetch(WORKER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                messages: chat.messages,
+                settings: settings
+            })
+        });
 
         const data = await response.json();
         typingIndicator.remove();
+        sendBtn.disabled = false;
 
         if (data.candidates && data.candidates[0]) {
             const aiMessageContent = data.candidates[0].content.parts[0].text;
             chat.messages.push({ role: 'ai', content: aiMessageContent });
-            saveToCookie();
         } else if (data.error) {
             const errorMessage = `AI Response Error: ${data.error.message || JSON.stringify(data)}`;
             chat.messages.push({ role: 'ai', content: `Sorry, I encountered an error processing your request. Details: ${errorMessage}` });
-            saveToCookie();
         } else {
             chat.messages.push({ role: 'ai', content: 'Sorry, I encountered an error processing your request (AI response failed).' });
-            saveToCookie();
         }
 
-        saveToCookie();
         renderMessages();
+        saveToCookie();
     } catch (error) {
         typingIndicator.remove();
+        sendBtn.disabled = false;
         chat.messages.push({ role: 'ai', content: `Sorry, I couldn't connect to the AI service. Details: ${error.message}` });
         renderMessages();
         saveToCookie();
     }
-
 }
 function handleKeyPress(event) {
     const input = document.getElementById('messageInput');
@@ -746,24 +723,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     loadFromCookie();
-    renderChats();
-    renderMessages();
     
     if (chats.length === 0) {
         createNewChat();
+    } else if (currentChatId === null) {
+        currentChatId = chats[0].id;
+    }
+    
+    renderChats();
+    renderMessages();
+
+    setupMobileUI();
+    refreshMobileHeaderTitle();
+
+    const mobileChatBtn = document.querySelector('.chat-header .toggle-sidebar-btn');
+    if (mobileChatBtn) {
+        mobileChatBtn.addEventListener('click', openChatModal);
     }
 
-setupMobileUI();
-refreshMobileHeaderTitle();
+    window.addEventListener('resize', manageMobileSettingsButton);
 
-const mobileChatBtn = document.querySelector('.chat-header .toggle-sidebar-btn');
-if (mobileChatBtn) {
-    mobileChatBtn.addEventListener('click', openChatModal);
-}
-
-window.addEventListener('resize', manageMobileSettingsButton);
-
-const messageInput = document.getElementById('messageInput');
+    const messageInput = document.getElementById('messageInput');
     if (messageInput) {
         messageInput.addEventListener('input', syncModeUI);
         messageInput.addEventListener('keydown', handleKeyPress);
@@ -801,9 +781,8 @@ const messageInput = document.getElementById('messageInput');
     syncModeUI();
     
     const toggleSidebarBtn = document.querySelector('.chat-header .toggle-sidebar-btn');
-        if (toggleSidebarBtn) {
-        toggleSidebarBtn.onclick = openChatModal;
-       }
+    if (toggleSidebarBtn) {
+    }
 });
 
 function openChatModal() {
@@ -883,6 +862,7 @@ function createNewChatFromHeader() {
     };
     chats.unshift(chat);
     currentChatId = chat.id;
+    saveToCookie();
 
     renderChats();
     renderMessages();
@@ -890,9 +870,9 @@ function createNewChatFromHeader() {
 }
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('webpushr-sw.js')
-    .then(reg => console.log('ServiceWorker registered', reg))
-    .catch(err => console.error('ServiceWorker registration failed', err));
+    navigator.serviceWorker.register('webpushr-sw.js')
+        .then(reg => console.log('ServiceWorker registered', reg))
+        .catch(err => console.error('ServiceWorker registration failed', err));
 }
 
 window.selectChat = selectChat;
@@ -907,3 +887,4 @@ window.copyCode = copyCode;
 window.createNewChat = createNewChat;
 window.openChatManager = openChatManager;
 window.closeChatManager = closeChatManager;
+window.createNewChatFromHeader = createNewChatFromHeader;
