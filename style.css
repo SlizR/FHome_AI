@@ -959,10 +959,10 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 18px auto 10px;
     cursor: default;
     transition: all 0.3s ease;
     user-select: none;
+    margin-left: 8px;
 }
 
 .daily-counter:hover {
@@ -978,4 +978,19 @@ body {
 .daily-counter.limit-reached:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 22px rgba(255, 80, 80, 0.5);
+}
+
+.desktop-only {
+    display: flex;
+}
+
+.mobile-only {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .daily-counter {
+        order: -1;
+        margin-left: 0;
+    }
 }
