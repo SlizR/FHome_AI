@@ -1,6 +1,6 @@
 importScripts('https://cdn.webpushr.com/sw-server.min.js');
 
-const CACHE_NAME = 'fhomeai-cache-v7';
+const CACHE_NAME = 'fhomeai-cache-v8';
 const urlsToCache = [
   '/',
   'index.html',
