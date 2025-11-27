@@ -12,6 +12,7 @@ let settings = {
     userBio: '',
     userPreferences: ''
 };
+let isAiResponding = false;
 
 const uiOriginal = {
     buttonText: null,
@@ -218,6 +219,33 @@ function getCookie(name) {
     return match ? decodeURIComponent(match[2]) : null;
 }
 
+function applyAvatarPreview() {
+    const userAvatarInput = document.getElementById('userAvatarInput');
+    const avatarPreview = document.getElementById('avatarPreview');
+
+    if (userAvatarInput && avatarPreview) {
+        const val = userAvatarInput.value.trim().toLowerCase();
+        if (!userAvatarInput.value || val === 'user') {
+            userAvatarInput.value = 'https://fhai.pp.ua/Assets/user.png';
+            avatarPreview.src = 'https://fhai.pp.ua/Assets/user.png';
+            avatarPreview.style.display = 'block';
+            avatarPreview.style.width = '30px';
+            avatarPreview.style.height = '30px';
+            avatarPreview.style.objectFit = 'cover';
+            avatarPreview.style.marginLeft = '5px';
+        } else if (userAvatarInput.value.indexOf('http') === 0) {
+            avatarPreview.src = userAvatarInput.value;
+            avatarPreview.style.display = 'block';
+            avatarPreview.style.width = '30px';
+            avatarPreview.style.height = '30px';
+            avatarPreview.style.objectFit = 'cover';
+            avatarPreview.style.marginLeft = '5px';
+        } else {
+            avatarPreview.style.display = 'none';
+        }
+    }
+}
+
 function applySettings() {
     const userNameInput = document.getElementById('userNameInput');
     if (userNameInput) userNameInput.value = settings.userName;
@@ -254,6 +282,9 @@ function applySettings() {
         }
     }
 }
+
+applySettings();
+applyAvatarPreview();
 
 function openSettings() {
     const modal = document.getElementById('settingsModal');
@@ -473,10 +504,12 @@ async function sendMessage() {
 
     if (!input || !sendBtn) return;
 
-if (!canSendDaily()) {
-    updateDailyUI();
-    return;
-}
+    if (isAiResponding) return;
+
+    if (!canSendDaily()) {
+        updateDailyUI();
+        return;
+    }
 
     const prepared = prepareMessageForAI();
     const uiMessage = prepared.uiMessage;
@@ -507,7 +540,7 @@ if (!canSendDaily()) {
     const typingIndicator = document.createElement('div');
     typingIndicator.className = 'message ai';
     typingIndicator.innerHTML = `
-        <img src="icon.png" class="message-avatar" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Ccircle cx=\'50\' cy=\'50\' r=\'50\' fill=\'%232ea67d\'/%3E%3Ctext x=\'50\' y=\'50\' font-size=\'40\' text-anchor=\'middle\' dy=\'.3em\' fill=\'white\' font-family=\'Arial\'%3EF%3C/text%3E%3C/svg%3E'">
+        <img src="icon.png" class="message-avatar">
         <div class="message-content">
             <div class="typing-indicator">
                 <div class="typing-dot"></div>
@@ -516,8 +549,11 @@ if (!canSendDaily()) {
             </div>
         </div>
     `;
+
     container.appendChild(typingIndicator);
     container.scrollTop = container.scrollHeight;
+
+    isAiResponding = true;
     sendBtn.disabled = true;
 
     try {
@@ -536,26 +572,41 @@ if (!canSendDaily()) {
 
         const data = await response.json();
         typingIndicator.remove();
-        sendBtn.disabled = false;
 
         if (data.candidates && data.candidates[0]) {
             const aiMessageContent = data.candidates[0].content.parts[0].text;
             chat.messages.push({ role: 'ai', content: aiMessageContent });
         } else if (data.error) {
-            const errorMessage = `AI Response Error: ${data.error.message || JSON.stringify(data)}`;
-            chat.messages.push({ role: 'ai', content: `Sorry, I encountered an error processing your request. Details: ${errorMessage}` });
+            chat.messages.push({
+                role: 'ai',
+                content: `Sorry, I encountered an error processing your request. Details: ${errorMessage}`
+            });
         } else {
-            chat.messages.push({ role: 'ai', content: 'Sorry, I encountered an error processing your request (AI response failed).' });
+            chat.messages.push({
+                role: 'ai',
+                content: 'Sorry, I encountered an error processing your request (AI response failed).'
+            });
         }
 
         renderMessages();
         saveToCookie();
+
+        isAiResponding = false;
+        sendBtn.disabled = false;
+
     } catch (error) {
         typingIndicator.remove();
-        sendBtn.disabled = false;
-        chat.messages.push({ role: 'ai', content: `Sorry, I couldn't connect to the AI service. Details: ${error.message}` });
+
+        chat.messages.push({
+            role: 'ai',
+            content: `Sorry, I couldn't connect to the AI service. Details: ${error.message}`
+        });
+
         renderMessages();
         saveToCookie();
+
+        isAiResponding = false;
+        sendBtn.disabled = false;
     }
 }
 function handleKeyPress(event) {
