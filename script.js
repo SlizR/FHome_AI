@@ -89,6 +89,24 @@ function updateDailyUI() {
     input.placeholder = `Daily limit reached — wait ${timeLeft}`;
 }
 
+function updateMessageLimitUI() {
+    const counter = document.getElementById("dailyCounter");
+    if (!counter) return;
+
+    const data = loadDailyData();
+    const left = DAILY_LIMIT - data.count;
+
+    if (left > 0) {
+        counter.textContent = left;
+        counter.classList.remove("limit-reached");
+        counter.title = "Messages left: " + left;
+    } else {
+        counter.textContent = "✖";
+        counter.classList.add("limit-reached");
+        counter.title = "X — daily limit reached";
+    }
+}
+
 function escapeHTML(str) {
     return str.replace(/[&<>"'\/]/g, function (c) {
         return ({
@@ -449,10 +467,6 @@ function prepareMessageForAI() {
     return { uiMessage, aiMessage };
 }
 
-function updateMessageLimitUI() {
-    updateDailyUI();
-}
-
 async function sendMessage() {
     const input = document.getElementById('messageInput');
     const sendBtn = document.getElementById('sendBtn');
@@ -509,6 +523,7 @@ if (!canSendDaily()) {
     try {
         increaseDailyCounter();
         updateDailyUI();
+        updateMessageLimitUI();
 
         const response = await fetch(WORKER_URL, {
             method: 'POST',
