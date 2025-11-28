@@ -520,13 +520,23 @@ body {
     margin-bottom: 15px;
 }
 
+.avatar-setting-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.avatar-setting-group .setting-input {
+    flex: 1;
+    max-width: calc(100% - 60px);
+}
+
 .avatar-preview {
-    width: 80px;
-    height: 80px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     object-fit: cover;
-    margin-top: 10px;
-    border: 3px solid #2ea67d;
+    border: 2px solid #2ea67d;
 }
 
 .settings-footer {
@@ -994,5 +1004,14 @@ body {
 @media (max-width: 767px) {
     #desktopDailyCounterContainer {
         display: none !important;
+    }
+}
+@media (min-width: 768px) {
+    #desktopDailyCounterContainer .daily-counter {
+        width: 32px;
+        height: 32px;
+        font-size: 13px;
+        margin: 0;
+        box-shadow: 0 3px 10px rgba(46, 166, 125, 0.25);
     }
 }
