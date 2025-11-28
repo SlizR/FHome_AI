@@ -117,11 +117,13 @@
                 <label class="setting-label">Your Name</label>
                 <input type="text" class="setting-input" id="userNameInput" placeholder="Enter your name">
             </div>
-            <div class="setting-group">
-                <label class="setting-label">Your Avatar URL</label>
-                <input type="text" class="setting-input" id="userAvatarInput" placeholder="Enter image URL">
-                <img id="avatarPreview" class="avatar-preview" style="display: none;">
-            </div>
+            <div class="setting-group avatar-setting-group">
+    <label class="setting-label">Your Avatar URL</label>
+    <div style="display:flex; align-items:center; gap:10px; width:100%;">
+        <input type="text" class="setting-input" id="userAvatarInput" placeholder="Enter image URL">
+        <img id="avatarPreview" class="avatar-preview" style="display: none;">
+    </div>
+</div>
             <div class="setting-group">
                 <label class="setting-label">Message Border Radius: <span id="radiusValue">18</span>px</label>
                 <div class="slider-container">
