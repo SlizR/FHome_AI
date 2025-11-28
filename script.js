@@ -219,33 +219,6 @@ function getCookie(name) {
     return match ? decodeURIComponent(match[2]) : null;
 }
 
-function applyAvatarPreview() {
-    const userAvatarInput = document.getElementById('userAvatarInput');
-    const avatarPreview = document.getElementById('avatarPreview');
-
-    if (userAvatarInput && avatarPreview) {
-        const val = userAvatarInput.value.trim().toLowerCase();
-        if (!userAvatarInput.value || val === 'user') {
-            userAvatarInput.value = 'https://fhai.pp.ua/Assets/user.png';
-            avatarPreview.src = 'https://fhai.pp.ua/Assets/user.png';
-            avatarPreview.style.display = 'block';
-            avatarPreview.style.width = '30px';
-            avatarPreview.style.height = '30px';
-            avatarPreview.style.objectFit = 'cover';
-            avatarPreview.style.marginLeft = '5px';
-        } else if (userAvatarInput.value.indexOf('http') === 0) {
-            avatarPreview.src = userAvatarInput.value;
-            avatarPreview.style.display = 'block';
-            avatarPreview.style.width = '30px';
-            avatarPreview.style.height = '30px';
-            avatarPreview.style.objectFit = 'cover';
-            avatarPreview.style.marginLeft = '5px';
-        } else {
-            avatarPreview.style.display = 'none';
-        }
-    }
-}
-
 function applySettings() {
     const userNameInput = document.getElementById('userNameInput');
     if (userNameInput) userNameInput.value = settings.userName;
