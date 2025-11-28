@@ -957,21 +957,7 @@ body {
     max-width: 460px;
 }
 
-.brand-counter-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
 .daily-counter {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 700;
-    cursor: default;
-    transition: all 0.3s ease;
-    user-select: none;
     width: 48px;
     height: 48px;
     border-radius: 50%;
@@ -980,6 +966,23 @@ body {
     color: white;
     font-weight: 700;
     font-size: 17px;
+    
+    display: none; 
+
+    align-items: center;
+    justify-content: center;
+    
+    margin: 18px auto 10px;
+    cursor: default;
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+@media (max-width: 767px) {
+    .daily-counter {
+        display: flex;
+        margin: 18px auto 10px;
+    }
 }
 
 .daily-counter:hover {
@@ -997,44 +1000,17 @@ body {
     box-shadow: 0 6px 22px rgba(255, 80, 80, 0.5);
 }
 
+
 @media (min-width: 768px) {
     #desktopDailyCounterContainer {
         display: flex;
-        align-items: center;
-    }
-
-    #desktopDailyCounterContainer .daily-counter {
-        width: 32px;
-        height: 32px;
-        font-size: 13px;
-        margin: 0;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #2ea67d, #34d399);
-        box-shadow: 0 3px 10px rgba(46, 166, 125, 0.25);
-    }
-
-    #chatHeader .daily-counter {
-        display: none !important;
+        margin-left: auto;
+        margin-right: 10px;
     }
 }
 
 @media (max-width: 767px) {
     #desktopDailyCounterContainer {
         display: none !important;
-    }
-
-    .daily-counter {
-        width: 38px;
-        height: 38px;
-        font-size: 14px;
-        margin: 0;
-        border-radius: 8px;
-        background: linear-gradient(135deg, #2ea67d, #34d399);
-        box-shadow: 0 4px 12px rgba(46, 166, 125, 0.3);
-    }
-
-    .daily-counter:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 6px 15px rgba(46, 166, 125, 0.4);
     }
 }
