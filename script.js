@@ -108,6 +108,23 @@ function updateMessageLimitUI() {
     }
 }
 
+function relocateDailyCounter() {
+    const counter = document.getElementById("dailyCounter");
+    const desktopSpot = document.getElementById("desktopDailyCounterContainer");
+    const mobileSpot = document.querySelector(".chat-header-right");
+
+    if (!counter || !desktopSpot || !mobileSpot) return;
+
+    if (window.innerWidth >= 768) {
+        desktopSpot.appendChild(counter);
+    } else {
+        mobileSpot.prepend(counter);
+    }
+}
+
+window.addEventListener("resize", relocateDailyCounter);
+window.addEventListener("load", relocateDailyCounter);
+
 function escapeHTML(str) {
     return str.replace(/[&<>"'\/]/g, function (c) {
         return ({
