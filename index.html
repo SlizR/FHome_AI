@@ -40,12 +40,9 @@
     <div class="container">
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-    <img src="icon.png" alt="FHome AI®" class="logo">
-    <div class="brand-wrapper">
-        <span class="brand">FHome AI®</span>
-        <div class="daily-counter" id="dailyCounter" title="Messages left">50</div>
-    </div>
-</div>
+                <img src="icon.png" alt="FHome AI®" class="logo">
+                <span class="brand">FHome AI®</span>
+            </div>
             <button class="toggle-sidebar-btn" style="position:absolute; top:10px; right:10px;" onclick="toggleSidebar()">×</button>
             
             <button class="new-chat-btn" onclick="createNewChat()">+ New Chat</button>
@@ -63,6 +60,7 @@
                 <span class="chat-title-mobile" id="chatTitleMobile">New Chat</span>
 
                 <div class="chat-header-right">
+              <div class="daily-counter" id="dailyCounter" title="Messages left">50</div>
               <button class="mini-new-chat-btn" onclick="createNewChat()" title="">+</button>
               <button class="header-settings-btn" onclick="openSettings()">⚙️</button>
             </div>
