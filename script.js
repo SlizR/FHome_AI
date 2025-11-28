@@ -108,6 +108,35 @@ function updateMessageLimitUI() {
     }
 }
 
+function updateAiRespondingUI() {
+    const sendBtn = document.getElementById("sendBtn");
+    const input = document.getElementById("messageInput");
+
+    if (!sendBtn || !input) return;
+
+    if (uiOriginal.buttonText === null) {
+        uiOriginal.buttonText = sendBtn.textContent;
+        uiOriginal.placeholder = input.placeholder;
+    }
+
+    const data = loadDailyData();
+    const dailyLimitReached = data.count >= DAILY_LIMIT;
+
+    if (isAiResponding) {
+        sendBtn.disabled = true;
+        sendBtn.textContent = '⇥';
+        input.placeholder = "FHome® is typing...";
+    } else if (dailyLimitReached) {
+        sendBtn.disabled = true;
+        sendBtn.textContent = "✖";
+        input.placeholder = `Daily limit reached — wait ${getTimeUntilReset()}`;
+    } else {
+        sendBtn.disabled = false;
+        sendBtn.textContent = uiOriginal.buttonText;
+        input.placeholder = uiOriginal.placeholder;
+    }
+}
+
 function relocateDailyCounter() {
     const counter = document.getElementById("dailyCounter");
     const desktopSpot = document.getElementById("desktopDailyCounterContainer");
@@ -544,7 +573,7 @@ async function sendMessage() {
     container.scrollTop = container.scrollHeight;
 
     isAiResponding = true;
-    sendBtn.disabled = true;
+    updateAiRespondingUI();
 
     try {
         increaseDailyCounter();
@@ -596,7 +625,7 @@ async function sendMessage() {
         saveToCookie();
 
         isAiResponding = false;
-        sendBtn.disabled = false;
+        updateAiRespondingUI();
     }
 }
 function handleKeyPress(event) {
