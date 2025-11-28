@@ -989,11 +989,22 @@ body {
     transform: translateY(-2px);
     box-shadow: 0 6px 22px rgba(255, 80, 80, 0.5);
 }
+
 @media (min-width: 768px) {
     #desktopDailyCounterContainer {
         display: flex;
+        align-items: center;
+        gap: 6px;
         margin-left: auto;
         margin-right: 10px;
+    }
+
+    #desktopDailyCounterContainer .daily-counter {
+        width: 32px;
+        height: 32px;
+        font-size: 13px;
+        margin: 0;
+        box-shadow: 0 3px 10px rgba(46, 166, 125, 0.25);
     }
 
     #chatHeader .daily-counter {
@@ -1005,13 +1016,18 @@ body {
     #desktopDailyCounterContainer {
         display: none !important;
     }
-}
-@media (min-width: 768px) {
-    #desktopDailyCounterContainer .daily-counter {
-        width: 32px;
-        height: 32px;
-        font-size: 13px;
+
+    .daily-counter {
+        width: 38px;
+        height: 38px;
+        font-size: 14px;
         margin: 0;
-        box-shadow: 0 3px 10px rgba(46, 166, 125, 0.25);
+        border-radius: 50%;
+        box-shadow: 0 4px 12px rgba(46, 166, 125, 0.3);
+    }
+
+    .daily-counter:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 15px rgba(46, 166, 125, 0.4);
     }
 }
