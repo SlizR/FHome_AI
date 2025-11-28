@@ -303,7 +303,6 @@ function applySettings() {
 }
 
 applySettings();
-applyAvatarPreview();
 
 function openSettings() {
     const modal = document.getElementById('settingsModal');
