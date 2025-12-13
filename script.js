@@ -594,11 +594,11 @@ async function sendMessage() {
         if (data.candidates && data.candidates[0]) {
             const aiMessageContent = data.candidates[0].content.parts[0].text;
             chat.messages.push({ role: 'ai', content: aiMessageContent });
-        } else if (data.error) {
-            chat.messages.push({
-                role: 'ai',
-                content: `Sorry, I encountered an error processing your request. Details: ${errorMessage}`
-            });
+} else if (data.error) {
+    chat.messages.push({
+        role: 'ai',
+        content: `Sorry, I encountered an error processing your request. Details: ${data.error.message || data.error}`
+    });
         } else {
             chat.messages.push({
                 role: 'ai',
