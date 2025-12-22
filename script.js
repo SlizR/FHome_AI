@@ -1,4 +1,4 @@
-const WORKER_URL = 'https://gemini-api-proxy.markd-voznyuk.workers.dev';
+const WORKER_URL = 'https://server.fhai.pp.ua';
 const DAILY_LIMIT = 50;
 
 let chats = [];
