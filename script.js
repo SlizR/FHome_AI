@@ -1,4 +1,4 @@
-const WORKER_URL = 'https://server.fhai.pp.ua';
+const WORKER_URL = 'https://server.fhai.pp.ua'; // W-URL
 const DAILY_LIMIT = 50;
 
 let chats = [];
